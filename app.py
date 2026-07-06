@@ -12,6 +12,8 @@ try:
     integration_status = pd.read_csv("sample_data/integration_status.csv")
     risks = pd.read_csv("sample_data/risks.csv")
     budget = pd.read_csv("sample_data/budget.csv")
+    legal_entities = pd.read_csv("sample_data/legal_entities.csv")
+    sme_directory = pd.read_csv("sample_data/sme_directory.csv")
 
     completed_areas = (integration_status["status"] == "Complete").sum()
     total_areas = len(integration_status)
@@ -39,8 +41,13 @@ try:
 
     st.write("Budget")
     st.dataframe(budget)
-
     st.caption(f"Total Budget: ${total_budget:,.0f}")
+
+    st.write("Legal Entities")
+    st.dataframe(legal_entities)
+
+    st.write("SME Directory")
+    st.dataframe(sme_directory)
 
 except Exception as e:
     st.error(f"Could not load sample data: {e}")
