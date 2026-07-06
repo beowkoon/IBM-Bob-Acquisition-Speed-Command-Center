@@ -4,7 +4,8 @@ import pandas as pd
 st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
 
 st.title("IBM Bob Acquisition Speed Command Center")
-st.subheader("Prototype Dashboard")
+workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
+st.subheader(f"Prototype Dashboard - {workspace_name}")
 
 st.write("This is the initial prototype for acquisition integration tracking.")
 
@@ -88,7 +89,7 @@ try:
 
         with summary_col:
             st.subheader("Current Workspace Summary")
-            st.write(f"{total_areas} integration areas are being tracked in the current workspace.")
+            st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
             st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
             st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
 
@@ -136,10 +137,10 @@ try:
         if question == "What should we do first after acquiring Company X?":
             st.subheader("Executive Summary")
             st.write(
-                f"Start by creating the acquisition workspace, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
+                f"Start by creating the {workspace_name} workspace, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
             )
             st.subheader("Recommended Actions")
-            st.write("1. Create workspace and confirm Day 1 / Day 100 targets.")
+            st.write(f"1. Create the {workspace_name} workspace and confirm Day 1 / Day 100 targets.")
             st.write("2. Upload chart of accounts, headcount, legal entity, risk, and budget files.")
             st.write(f"3. Review the {high_risks} high-risk items and assign owners for open actions.")
             st.subheader("Owners / Functions")
