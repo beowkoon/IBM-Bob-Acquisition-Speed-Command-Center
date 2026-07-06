@@ -1,0 +1,4 @@
+Day 1 readiness requires completion of critical accounting, finance, payroll, legal, and access control activities.
+Use prior acquisition playbooks to identify standard mapping, governance, and SME routing steps.
+Legal entity simplification should be reviewed jointly by Legal, Tax, Treasury, and business leadership.
+Dashboard metrics should be refreshed after each major data upload.

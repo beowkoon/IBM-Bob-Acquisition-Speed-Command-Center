@@ -1,0 +1,5 @@
+entity_name,country,employees,annual_revenue,duplicate_ibm_presence,regulatory_required,active_contracts,annual_admin_cost
+Company X Malaysia Sdn Bhd,Malaysia,50,2000000,Yes,No,Yes,30000
+Company X Japan KK,Japan,120,5000000,No,Yes,Yes,50000
+Company X Singapore Pte Ltd,Singapore,0,0,Yes,No,No,15000
+Company X UK Ltd,United Kingdom,10,300000,Yes,No,No,20000

@@ -1,0 +1,5 @@
+risk_id,risk,severity,owner
+R001,Chart of accounts mapping incomplete,High,June
+R002,Payroll integration SME not assigned,Medium,John Lee
+R003,Legal entity review pending,High,David Lim
+R004,Budget variance exceeds target,Medium,Kevin Wong
