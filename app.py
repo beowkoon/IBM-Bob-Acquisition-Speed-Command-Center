@@ -25,6 +25,7 @@ uploaded_risks = st.sidebar.file_uploader("Upload risks CSV", type="csv")
 uploaded_budget = st.sidebar.file_uploader("Upload budget CSV", type="csv")
 uploaded_legal_entities = st.sidebar.file_uploader("Upload legal entities CSV", type="csv")
 uploaded_sme_directory = st.sidebar.file_uploader("Upload SME directory CSV", type="csv")
+uploaded_knowledge_library = st.sidebar.file_uploader("Upload knowledge library TXT", type="txt")
 
 
 try:
@@ -33,6 +34,12 @@ try:
     budget = pd.read_csv(uploaded_budget or "sample_data/budget.csv")
     legal_entities = pd.read_csv(uploaded_legal_entities or "sample_data/legal_entities.csv")
     sme_directory = pd.read_csv(uploaded_sme_directory or "sample_data/sme_directory.csv")
+
+    if uploaded_knowledge_library is not None:
+        knowledge_library_text = uploaded_knowledge_library.getvalue().decode("utf-8")
+    else:
+        with open("sample_data/knowledge_library.txt", encoding="utf-8") as knowledge_file:
+            knowledge_library_text = knowledge_file.read()
 
     legal_entities["recommended_action"] = legal_entities.apply(recommend_legal_entity_action, axis=1)
 
@@ -51,7 +58,7 @@ try:
         (sme_directory["function"] == "Payroll") & (sme_directory["geography"] == "Japan")
     ]
 
-    dashboard_tab, status_tab, risks_tab, budget_tab, legal_tab, sme_tab, bob_tab = st.tabs(
+    dashboard_tab, status_tab, risks_tab, budget_tab, legal_tab, sme_tab, knowledge_tab, bob_tab = st.tabs(
         [
             "Dashboard",
             "Integration Status",
@@ -59,6 +66,7 @@ try:
             "Budget",
             "Legal Entities",
             "SME Directory",
+            "Knowledge Library",
             "IBM Bob Q&A",
         ]
     )
@@ -92,6 +100,10 @@ try:
     with sme_tab:
         st.header("SME Directory")
         st.dataframe(sme_directory)
+
+    with knowledge_tab:
+        st.header("Knowledge Library")
+        st.text_area("Approved knowledge and lessons learned", knowledge_library_text, height=250)
 
     with bob_tab:
         st.header("IBM Bob Q&A")
