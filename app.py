@@ -84,10 +84,19 @@ try:
         col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
         st.caption(f"Total Budget: ${total_budget:,.0f}")
 
-        st.subheader("Current Workspace Summary")
-        st.write(f"{total_areas} integration areas are being tracked in the current workspace.")
-        st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
-        st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
+        summary_col, highlights_col = st.columns(2)
+
+        with summary_col:
+            st.subheader("Current Workspace Summary")
+            st.write(f"{total_areas} integration areas are being tracked in the current workspace.")
+            st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
+            st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
+
+        with highlights_col:
+            st.subheader("Key Highlights")
+            st.info(f"{high_risks} high-risk items currently need executive attention.")
+            st.info(f"Forecast spend is ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}.")
+            st.info(f"Estimated savings currently total ${estimated_savings:,.0f}.")
 
     with status_tab:
         st.header("Integration Status")
