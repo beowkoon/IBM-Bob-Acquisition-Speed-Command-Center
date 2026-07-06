@@ -7,6 +7,34 @@ st.markdown(
     [data-testid="stAppViewContainer"] {
         background-color: #f2f4f8;
     }
+    [data-testid="stMetric"] {
+        background-color: #ffffff;
+        border: 1px solid #dfe3e8;
+        padding: 16px;
+        border-radius: 12px;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #525252;
+        font-weight: 600;
+    }
+    [data-testid="stMetricValue"] {
+        color: #0f62fe;
+        font-weight: 700;
+    }
+    .executive-banner {
+        background-color: #0f62fe;
+        color: white;
+        padding: 20px 24px;
+        border-radius: 14px;
+        margin-bottom: 16px;
+    }
+    .executive-card {
+        background-color: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 16px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -98,6 +126,9 @@ try:
     japan_payroll_sme = sme_directory[
         (sme_directory["function"] == "Payroll") & (sme_directory["geography"] == "Japan")
     ]
+    budget_chart_data = budget.set_index("category")[["budget", "actual_spend", "forecast_spend"]]
+    legal_action_counts = legal_entities["recommended_action"].value_counts()
+    status_counts = integration_status["status"].value_counts()
 
     dashboard_tab, status_tab, risks_tab, budget_tab, legal_tab, sme_tab, knowledge_tab, bob_tab = st.tabs(
         [
@@ -114,6 +145,16 @@ try:
 
     with dashboard_tab:
         st.caption("Private and Confidential")
+        st.markdown(
+            f"""
+            <div class="executive-banner">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">Executive Integration Dashboard</div>
+                <div style="font-size: 15px;">{workspace_name} | {region} | Integration Lead: {integration_lead}</div>
+                <div style="font-size: 14px; margin-top: 6px;">Day 1: {day_1_date} | Day 100: {day_100_date}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         st.header("Dashboard Metrics")
         st.write(
             "This dashboard summarizes acquisition integration readiness, risk exposure, budget outlook, legal entity actions, and SME support for the current workspace."
@@ -129,6 +170,7 @@ try:
         summary_col, highlights_col = st.columns(2)
 
         with summary_col:
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.subheader("Current Workspace Summary")
             st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
             st.write(f"Integration lead: {integration_lead}")
@@ -137,12 +179,28 @@ try:
             st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
             st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
             st.write(f"The total savings if recommended actions are taken is ${total_action_savings:,.0f}.")
+            st.markdown("</div>", unsafe_allow_html=True)
 
         with highlights_col:
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.subheader("Key Highlights")
             st.info(f"{high_risks} high-risk items currently need executive attention.")
             st.info(f"Forecast spend is ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}.")
             st.info(f"Estimated savings currently total ${estimated_savings:,.0f}.")
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        chart_col1, chart_col2 = st.columns(2)
+
+        with chart_col1:
+            st.subheader("Budget Overview")
+            st.bar_chart(budget_chart_data)
+
+        with chart_col2:
+            st.subheader("Legal Entity Actions")
+            st.bar_chart(legal_action_counts)
+
+        st.subheader("Integration Status Overview")
+        st.bar_chart(status_counts)
 
     with status_tab:
         st.caption("Private and Confidential")
