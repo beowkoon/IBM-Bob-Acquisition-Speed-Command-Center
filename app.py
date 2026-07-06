@@ -23,31 +23,39 @@ try:
     forecast_spend = budget["forecast_spend"].sum()
     estimated_savings = budget["estimated_savings"].sum()
 
-    st.header("Dashboard Metrics")
-    col1, col2, col3, col4 = st.columns(4)
+    dashboard_tab, status_tab, risks_tab, budget_tab, legal_tab, sme_tab = st.tabs(
+        ["Dashboard", "Integration Status", "Risks", "Budget", "Legal Entities", "SME Directory"]
+    )
 
-    col1.metric("Readiness %", f"{readiness_percent}%")
-    col2.metric("High Risks", high_risks)
-    col3.metric("Forecast Spend", f"${forecast_spend:,.0f}")
-    col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+    with dashboard_tab:
+        st.header("Dashboard Metrics")
+        col1, col2, col3, col4 = st.columns(4)
 
-    st.header("Sample Data Preview")
+        col1.metric("Readiness %", f"{readiness_percent}%")
+        col2.metric("High Risks", high_risks)
+        col3.metric("Forecast Spend", f"${forecast_spend:,.0f}")
+        col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+        st.caption(f"Total Budget: ${total_budget:,.0f}")
 
-    st.write("Integration Status")
-    st.dataframe(integration_status)
+    with status_tab:
+        st.header("Integration Status")
+        st.dataframe(integration_status)
 
-    st.write("Risks")
-    st.dataframe(risks)
+    with risks_tab:
+        st.header("Risks")
+        st.dataframe(risks)
 
-    st.write("Budget")
-    st.dataframe(budget)
-    st.caption(f"Total Budget: ${total_budget:,.0f}")
+    with budget_tab:
+        st.header("Budget")
+        st.dataframe(budget)
 
-    st.write("Legal Entities")
-    st.dataframe(legal_entities)
+    with legal_tab:
+        st.header("Legal Entities")
+        st.dataframe(legal_entities)
 
-    st.write("SME Directory")
-    st.dataframe(sme_directory)
+    with sme_tab:
+        st.header("SME Directory")
+        st.dataframe(sme_directory)
 
 except Exception as e:
     st.error(f"Could not load sample data: {e}")
