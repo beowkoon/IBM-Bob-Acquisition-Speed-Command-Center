@@ -73,6 +73,9 @@ try:
 
     with dashboard_tab:
         st.header("Dashboard Metrics")
+        st.write(
+            "This dashboard summarizes acquisition integration readiness, risk exposure, budget outlook, legal entity actions, and SME support for the current workspace."
+        )
         col1, col2, col3, col4 = st.columns(4)
 
         col1.metric("Readiness %", f"{readiness_percent}%")
@@ -80,6 +83,11 @@ try:
         col3.metric("Forecast Spend", f"${forecast_spend:,.0f}")
         col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
         st.caption(f"Total Budget: ${total_budget:,.0f}")
+
+        st.subheader("Current Workspace Summary")
+        st.write(f"{total_areas} integration areas are being tracked in the current workspace.")
+        st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
+        st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
 
     with status_tab:
         st.header("Integration Status")
