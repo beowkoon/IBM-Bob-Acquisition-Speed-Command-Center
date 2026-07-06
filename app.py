@@ -1,6 +1,17 @@
 import streamlit as st
 import pandas as pd
 
+st.markdown(
+    """
+    <style>
+    [data-testid="stAppViewContainer"] {
+        background-color: #f2f4f8;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
 
 st.title("IBM Bob Acquisition Speed Command Center")
@@ -62,6 +73,28 @@ try:
         legal_entities["recommended_action"].isin(["Merge", "Dissolve"])
     ]
     annual_admin_cost_reduction = merge_or_dissolve_entities["annual_admin_cost"].sum()
+    total_action_savings = merge_or_dissolve_entities["saving_if_action_is_taken"].sum()
+    budget_totals = pd.DataFrame(
+        [
+            {
+                "category": "Total",
+                "budget": budget["budget"].sum(),
+                "actual_spend": budget["actual_spend"].sum(),
+                "forecast_spend": budget["forecast_spend"].sum(),
+                "estimated_savings": budget["estimated_savings"].sum(),
+            }
+        ]
+    )
+    legal_entity_totals = pd.DataFrame(
+        [
+            {
+                "entity_name": "Total",
+                "annual_admin_cost": legal_entities["annual_admin_cost"].sum(),
+                "annual_audit_fees": legal_entities["annual_audit_fees"].sum(),
+                "saving_if_action_is_taken": legal_entities["saving_if_action_is_taken"].sum(),
+            }
+        ]
+    )
     japan_payroll_sme = sme_directory[
         (sme_directory["function"] == "Payroll") & (sme_directory["geography"] == "Japan")
     ]
@@ -103,6 +136,7 @@ try:
             st.write(f"Day 1 target: {day_1_date} | Day 100 target: {day_100_date}")
             st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
             st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
+            st.write(f"The total savings if recommended actions are taken is ${total_action_savings:,.0f}.")
 
         with highlights_col:
             st.subheader("Key Highlights")
@@ -124,11 +158,15 @@ try:
         st.caption("Private and Confidential")
         st.header("Budget")
         st.dataframe(budget)
+        st.subheader("Totals")
+        st.dataframe(budget_totals)
 
     with legal_tab:
         st.caption("Private and Confidential")
         st.header("Legal Entities")
         st.dataframe(legal_entities)
+        st.subheader("Totals")
+        st.dataframe(legal_entity_totals)
 
     with sme_tab:
         st.caption("Private and Confidential")
@@ -173,12 +211,19 @@ try:
         elif question == "Which legal entities can be merged or dissolved and what is the cash impact?":
             st.subheader("Executive Summary")
             st.write(
-                f"There are {len(merge_or_dissolve_entities)} legal entities currently flagged for merge or dissolve, with an estimated annual admin cost impact of ${annual_admin_cost_reduction:,.0f}."
+                f"There are {len(merge_or_dissolve_entities)} legal entities currently flagged for merge or dissolve, with an estimated annual admin cost impact of ${annual_admin_cost_reduction:,.0f} and total action savings of ${total_action_savings:,.0f}."
             )
             st.subheader("Recommended Actions")
             st.write("Review the recommended_action column in the Legal Entities tab.")
             st.dataframe(
-                merge_or_dissolve_entities[["entity_name", "recommended_action", "annual_admin_cost"]]
+                merge_or_dissolve_entities[[
+                    "entity_name",
+                    "external_auditors",
+                    "annual_audit_fees",
+                    "recommended_action",
+                    "annual_admin_cost",
+                    "saving_if_action_is_taken",
+                ]]
             )
             st.subheader("Owners / Functions")
             st.write("Legal, Tax, Treasury, Integration Lead")
