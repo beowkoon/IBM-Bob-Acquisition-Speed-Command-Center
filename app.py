@@ -5,6 +5,8 @@ st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout
 
 st.title("IBM Bob Acquisition Speed Command Center")
 workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
+integration_lead = st.text_input("Integration Lead", value="BEOW KOON HENG")
+region = st.selectbox("Region", ["APAC", "Americas", "EMEA", "Japan"])
 date_col1, date_col2 = st.columns(2)
 with date_col1:
     day_1_date = st.date_input("Day 1 Target Date")
@@ -78,6 +80,7 @@ try:
     )
 
     with dashboard_tab:
+        st.caption("Private and Confidential")
         st.header("Dashboard Metrics")
         st.write(
             "This dashboard summarizes acquisition integration readiness, risk exposure, budget outlook, legal entity actions, and SME support for the current workspace."
@@ -95,6 +98,8 @@ try:
         with summary_col:
             st.subheader("Current Workspace Summary")
             st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
+            st.write(f"Integration lead: {integration_lead}")
+            st.write(f"Region: {region}")
             st.write(f"Day 1 target: {day_1_date} | Day 100 target: {day_100_date}")
             st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
             st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
@@ -106,30 +111,37 @@ try:
             st.info(f"Estimated savings currently total ${estimated_savings:,.0f}.")
 
     with status_tab:
+        st.caption("Private and Confidential")
         st.header("Integration Status")
         st.dataframe(integration_status)
 
     with risks_tab:
+        st.caption("Private and Confidential")
         st.header("Risks")
         st.dataframe(risks)
 
     with budget_tab:
+        st.caption("Private and Confidential")
         st.header("Budget")
         st.dataframe(budget)
 
     with legal_tab:
+        st.caption("Private and Confidential")
         st.header("Legal Entities")
         st.dataframe(legal_entities)
 
     with sme_tab:
+        st.caption("Private and Confidential")
         st.header("SME Directory")
         st.dataframe(sme_directory)
 
     with knowledge_tab:
+        st.caption("Private and Confidential")
         st.header("Knowledge Library")
         st.text_area("Approved knowledge and lessons learned", knowledge_library_text, height=250)
 
     with bob_tab:
+        st.caption("Private and Confidential")
         st.header("IBM Bob Q&A")
         question = st.selectbox(
             "Select a sample question",
@@ -143,20 +155,20 @@ try:
         if question == "What should we do first after acquiring Company X?":
             st.subheader("Executive Summary")
             st.write(
-                f"Start by creating the {workspace_name} workspace, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
+                f"Start by creating the {workspace_name} workspace for {region}, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
             )
             st.subheader("Recommended Actions")
             st.write(f"1. Create the {workspace_name} workspace and confirm Day 1 / Day 100 targets.")
             st.write("2. Upload chart of accounts, headcount, legal entity, risk, and budget files.")
             st.write(f"3. Review the {high_risks} high-risk items and assign owners for open actions.")
             st.subheader("Owners / Functions")
-            st.write("Integration Lead, Finance, HR, Legal, Tax")
+            st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
             st.write(f"Immediate start in Week 1, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
             st.subheader("Risks and Dependencies")
             st.write("Incomplete mappings, missing SMEs, and unresolved legal entity issues may delay readiness.")
             st.subheader("Next Steps")
-            st.write("Refresh the dashboard after each upload and route open issues to the correct owners.")
+            st.write(f"Refresh the dashboard after each upload and route open issues to {integration_lead} and the correct functional owners.")
 
         elif question == "Which legal entities can be merged or dissolved and what is the cash impact?":
             st.subheader("Executive Summary")
