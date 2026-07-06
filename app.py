@@ -35,6 +35,13 @@ try:
     total_budget = budget["budget"].sum()
     forecast_spend = budget["forecast_spend"].sum()
     estimated_savings = budget["estimated_savings"].sum()
+    merge_or_dissolve_entities = legal_entities[
+        legal_entities["recommended_action"].isin(["Merge", "Dissolve"])
+    ]
+    annual_admin_cost_reduction = merge_or_dissolve_entities["annual_admin_cost"].sum()
+    japan_payroll_sme = sme_directory[
+        (sme_directory["function"] == "Payroll") & (sme_directory["geography"] == "Japan")
+    ]
 
     dashboard_tab, status_tab, risks_tab, budget_tab, legal_tab, sme_tab, bob_tab = st.tabs(
         [
@@ -91,11 +98,13 @@ try:
 
         if question == "What should we do first after acquiring Company X?":
             st.subheader("Executive Summary")
-            st.write("Start by creating the acquisition workspace, uploading core finance, HR, legal, risk, and budget data, and validating Day 1 readiness gaps.")
+            st.write(
+                f"Start by creating the acquisition workspace, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
+            )
             st.subheader("Recommended Actions")
             st.write("1. Create workspace and confirm Day 1 / Day 100 targets.")
             st.write("2. Upload chart of accounts, headcount, legal entity, risk, and budget files.")
-            st.write("3. Review dashboard metrics and assign owners for open items.")
+            st.write(f"3. Review the {high_risks} high-risk items and assign owners for open actions.")
             st.subheader("Owners / Functions")
             st.write("Integration Lead, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
@@ -107,10 +116,14 @@ try:
 
         elif question == "Which legal entities can be merged or dissolved and what is the cash impact?":
             st.subheader("Executive Summary")
-            st.write("Entities with duplicate IBM presence and no regulatory requirement may be candidates for merge, while inactive entities with no employees or revenue may be candidates for dissolution.")
+            st.write(
+                f"There are {len(merge_or_dissolve_entities)} legal entities currently flagged for merge or dissolve, with an estimated annual admin cost impact of ${annual_admin_cost_reduction:,.0f}."
+            )
             st.subheader("Recommended Actions")
             st.write("Review the recommended_action column in the Legal Entities tab.")
-            st.write("Validate merge and dissolve candidates with Legal, Tax, and Treasury.")
+            st.dataframe(
+                merge_or_dissolve_entities[["entity_name", "recommended_action", "annual_admin_cost"]]
+            )
             st.subheader("Owners / Functions")
             st.write("Legal, Tax, Treasury, Integration Lead")
             st.subheader("Timeline")
@@ -118,21 +131,27 @@ try:
             st.subheader("Risks and Dependencies")
             st.write("Active contracts, regulatory requirements, and incomplete information may block action.")
             st.subheader("Next Steps")
-            st.write("Estimate annual admin cost reduction from entities marked for merge or dissolve.")
+            st.write("Validate candidates and confirm whether the estimated admin cost reduction can be realized.")
 
         elif question == "Who can help with payroll integration in Japan?":
             st.subheader("Executive Summary")
-            st.write("The SME Directory identifies the payroll SME coverage for Japan.")
-            st.subheader("Recommended Actions")
-            st.write("Engage the primary SME first, then use the backup SME or escalation path if needed.")
-            st.subheader("Owners / Functions")
-            st.write("HR, Payroll, Regional HR Leadership")
-            st.subheader("Timeline")
-            st.write("Immediate")
-            st.subheader("Risks and Dependencies")
-            st.write("Delays in payroll setup can affect Day 1 readiness and employee experience.")
-            st.subheader("Next Steps")
-            st.write("Review the Japan payroll row in the SME Directory tab and contact the listed SME.")
+            if not japan_payroll_sme.empty:
+                payroll_row = japan_payroll_sme.iloc[0]
+                st.write(
+                    f"The primary payroll SME for Japan is {payroll_row['primary_sme']}, with backup support from {payroll_row['backup_sme']}."
+                )
+                st.subheader("Recommended Actions")
+                st.write("Engage the primary SME first, then use the backup SME or escalation path if needed.")
+                st.subheader("Owners / Functions")
+                st.write("HR, Payroll, Regional HR Leadership")
+                st.subheader("Timeline")
+                st.write("Immediate")
+                st.subheader("Risks and Dependencies")
+                st.write("Delays in payroll setup can affect Day 1 readiness and employee experience.")
+                st.subheader("Next Steps")
+                st.write(f"Contact {payroll_row['primary_sme']} and escalate via {payroll_row['escalation_path']} if required.")
+            else:
+                st.write("No Japan payroll SME was found in the SME Directory.")
 
 except Exception as e:
     st.error(f"Could not load sample data: {e}")
