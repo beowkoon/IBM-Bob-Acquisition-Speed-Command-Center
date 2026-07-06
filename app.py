@@ -19,12 +19,20 @@ def recommend_legal_entity_action(entity):
     return "Further Assessment"
 
 
+st.sidebar.header("Data Upload Center")
+uploaded_integration_status = st.sidebar.file_uploader("Upload integration status CSV", type="csv")
+uploaded_risks = st.sidebar.file_uploader("Upload risks CSV", type="csv")
+uploaded_budget = st.sidebar.file_uploader("Upload budget CSV", type="csv")
+uploaded_legal_entities = st.sidebar.file_uploader("Upload legal entities CSV", type="csv")
+uploaded_sme_directory = st.sidebar.file_uploader("Upload SME directory CSV", type="csv")
+
+
 try:
-    integration_status = pd.read_csv("sample_data/integration_status.csv")
-    risks = pd.read_csv("sample_data/risks.csv")
-    budget = pd.read_csv("sample_data/budget.csv")
-    legal_entities = pd.read_csv("sample_data/legal_entities.csv")
-    sme_directory = pd.read_csv("sample_data/sme_directory.csv")
+    integration_status = pd.read_csv(uploaded_integration_status or "sample_data/integration_status.csv")
+    risks = pd.read_csv(uploaded_risks or "sample_data/risks.csv")
+    budget = pd.read_csv(uploaded_budget or "sample_data/budget.csv")
+    legal_entities = pd.read_csv(uploaded_legal_entities or "sample_data/legal_entities.csv")
+    sme_directory = pd.read_csv(uploaded_sme_directory or "sample_data/sme_directory.csv")
 
     legal_entities["recommended_action"] = legal_entities.apply(recommend_legal_entity_action, axis=1)
 
