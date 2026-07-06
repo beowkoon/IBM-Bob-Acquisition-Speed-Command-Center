@@ -8,12 +8,25 @@ st.subheader("Prototype Dashboard")
 
 st.write("This is the initial prototype for acquisition integration tracking.")
 
+
+def recommend_legal_entity_action(entity):
+    if entity["regulatory_required"] == "Yes":
+        return "Retain"
+    if entity["employees"] == 0 and entity["annual_revenue"] == 0 and entity["active_contracts"] == "No":
+        return "Dissolve"
+    if entity["duplicate_ibm_presence"] == "Yes" and entity["regulatory_required"] == "No":
+        return "Merge"
+    return "Further Assessment"
+
+
 try:
     integration_status = pd.read_csv("sample_data/integration_status.csv")
     risks = pd.read_csv("sample_data/risks.csv")
     budget = pd.read_csv("sample_data/budget.csv")
     legal_entities = pd.read_csv("sample_data/legal_entities.csv")
     sme_directory = pd.read_csv("sample_data/sme_directory.csv")
+
+    legal_entities["recommended_action"] = legal_entities.apply(recommend_legal_entity_action, axis=1)
 
     completed_areas = (integration_status["status"] == "Complete").sum()
     total_areas = len(integration_status)
