@@ -5,6 +5,11 @@ st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout
 
 st.title("IBM Bob Acquisition Speed Command Center")
 workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
+date_col1, date_col2 = st.columns(2)
+with date_col1:
+    day_1_date = st.date_input("Day 1 Target Date")
+with date_col2:
+    day_100_date = st.date_input("Day 100 Target Date")
 st.subheader(f"Prototype Dashboard - {workspace_name}")
 
 st.write("This is the initial prototype for acquisition integration tracking.")
@@ -90,6 +95,7 @@ try:
         with summary_col:
             st.subheader("Current Workspace Summary")
             st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
+            st.write(f"Day 1 target: {day_1_date} | Day 100 target: {day_100_date}")
             st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
             st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
 
@@ -146,7 +152,7 @@ try:
             st.subheader("Owners / Functions")
             st.write("Integration Lead, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
-            st.write("Immediate start in Week 1")
+            st.write(f"Immediate start in Week 1, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
             st.subheader("Risks and Dependencies")
             st.write("Incomplete mappings, missing SMEs, and unresolved legal entity issues may delay readiness.")
             st.subheader("Next Steps")
