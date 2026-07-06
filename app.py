@@ -7,6 +7,23 @@ st.markdown(
     [data-testid="stAppViewContainer"] {
         background-color: #f2f4f8;
     }
+    [data-testid="stTabs"] button {
+        background-color: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 10px 10px 0 0;
+        margin-right: 6px;
+        padding: 10px 18px;
+        color: #525252;
+        font-weight: 600;
+    }
+    [data-testid="stTabs"] button[aria-selected="true"] {
+        color: #0f62fe;
+        border-bottom: 3px solid #0f62fe;
+    }
+    [data-testid="stTabs"] [data-baseweb="tab-list"] {
+        gap: 4px;
+        border-bottom: 1px solid #dfe3e8;
+    }
     [data-testid="stMetric"] {
         background-color: #ffffff;
         border: 1px solid #dfe3e8;
@@ -64,6 +81,14 @@ def recommend_legal_entity_action(entity):
     if entity["duplicate_ibm_presence"] == "Yes" and entity["regulatory_required"] == "No":
         return "Merge"
     return "Further Assessment"
+
+
+def render_tab_header(title, summary):
+    st.caption("Private and Confidential")
+    st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+    st.header(title)
+    st.write(summary)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 st.sidebar.header("Data Upload Center")
@@ -203,42 +228,74 @@ try:
         st.bar_chart(status_counts)
 
     with status_tab:
-        st.caption("Private and Confidential")
-        st.header("Integration Status")
-        st.dataframe(integration_status)
+        render_tab_header(
+            "Integration Status",
+            "Review current progress across tracked integration areas and identify which workstreams remain incomplete.",
+        )
+        status_metric_col1, status_metric_col2, status_metric_col3 = st.columns(3)
+        status_metric_col1.metric("Tracked Areas", total_areas)
+        status_metric_col2.metric("Completed", completed_areas)
+        status_metric_col3.metric("Readiness", f"{readiness_percent}%")
+        st.dataframe(integration_status, use_container_width=True)
 
     with risks_tab:
-        st.caption("Private and Confidential")
-        st.header("Risks")
-        st.dataframe(risks)
+        render_tab_header(
+            "Risks",
+            "Monitor risk exposure and focus leadership attention on the most critical blockers to integration readiness.",
+        )
+        risk_metric_col1, risk_metric_col2 = st.columns(2)
+        risk_metric_col1.metric("Total Risks", len(risks))
+        risk_metric_col2.metric("High Risks", high_risks)
+        st.dataframe(risks, use_container_width=True)
 
     with budget_tab:
-        st.caption("Private and Confidential")
-        st.header("Budget")
-        st.dataframe(budget)
+        render_tab_header(
+            "Budget",
+            "Compare budget, current spend, forecast, and expected savings to understand overall integration cost performance.",
+        )
+        budget_metric_col1, budget_metric_col2, budget_metric_col3 = st.columns(3)
+        budget_metric_col1.metric("Total Budget", f"${total_budget:,.0f}")
+        budget_metric_col2.metric("Forecast Spend", f"${forecast_spend:,.0f}")
+        budget_metric_col3.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+        st.dataframe(budget, use_container_width=True)
         st.subheader("Totals")
-        st.dataframe(budget_totals)
+        st.dataframe(budget_totals, use_container_width=True)
 
     with legal_tab:
-        st.caption("Private and Confidential")
-        st.header("Legal Entities")
-        st.dataframe(legal_entities)
+        render_tab_header(
+            "Legal Entities",
+            "Review legal entity actions, audit cost exposure, and expected savings from simplification decisions.",
+        )
+        legal_metric_col1, legal_metric_col2, legal_metric_col3 = st.columns(3)
+        legal_metric_col1.metric("Entities Tracked", len(legal_entities))
+        legal_metric_col2.metric("Merge/Dissolve Candidates", len(merge_or_dissolve_entities))
+        legal_metric_col3.metric("Action Savings", f"${total_action_savings:,.0f}")
+        st.dataframe(legal_entities, use_container_width=True)
         st.subheader("Totals")
-        st.dataframe(legal_entity_totals)
+        st.dataframe(legal_entity_totals, use_container_width=True)
 
     with sme_tab:
-        st.caption("Private and Confidential")
-        st.header("SME Directory")
-        st.dataframe(sme_directory)
+        render_tab_header(
+            "SME Directory",
+            "Use the SME directory to identify functional owners, backups, and escalation contacts for key integration questions.",
+        )
+        sme_metric_col1, sme_metric_col2 = st.columns(2)
+        sme_metric_col1.metric("SME Records", len(sme_directory))
+        sme_metric_col2.metric("Region Focus", region)
+        st.dataframe(sme_directory, use_container_width=True)
 
     with knowledge_tab:
-        st.caption("Private and Confidential")
-        st.header("Knowledge Library")
+        render_tab_header(
+            "Knowledge Library",
+            "Reference approved knowledge, lessons learned, and reusable guidance to accelerate future acquisition decisions.",
+        )
         st.text_area("Approved knowledge and lessons learned", knowledge_library_text, height=250)
 
     with bob_tab:
-        st.caption("Private and Confidential")
-        st.header("IBM Bob Q&A")
+        render_tab_header(
+            "IBM Bob Q&A",
+            "Use structured IBM Bob responses to guide actions, identify owners, and accelerate acquisition decision-making.",
+        )
         question = st.selectbox(
             "Select a sample question",
             [
