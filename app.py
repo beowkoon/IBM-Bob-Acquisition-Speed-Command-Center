@@ -333,6 +333,7 @@ try:
             "Select a sample question",
             [
                 "What should we do first after acquiring Company X?",
+                "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?",
                 "Which legal entities can be merged or dissolved and what is the cash impact?",
                 "Who can help with payroll integration in Japan?",
             ],
@@ -343,24 +344,68 @@ try:
             st.write(
                 f"Start by creating the {workspace_name} workspace for {region}, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
             )
+            st.subheader("Agent Capabilities Used")
+            st.write("- Integration Navigator")
+            st.write("- Risk & Controls")
+            st.write("- Budget & Value Tracking")
+            st.write("- Legal Entity Optimization")
             st.subheader("Recommended Actions")
             st.write(f"1. Create the {workspace_name} workspace and confirm Day 1 / Day 100 targets.")
             st.write("2. Upload chart of accounts, headcount, legal entity, risk, and budget files.")
             st.write(f"3. Review the {high_risks} high-risk items and assign owners for open actions.")
-            st.subheader("Owners / Functions")
+            st.subheader("Owners")
             st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
             st.write(f"Immediate start in Week 1, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
-            st.subheader("Risks and Dependencies")
+            st.subheader("Risks")
             st.write("Incomplete mappings, missing SMEs, and unresolved legal entity issues may delay readiness.")
+            st.subheader("Budget / Savings / Cash Impact")
+            st.write(f"Forecast spend: ${forecast_spend:,.0f}")
+            st.write(f"Estimated savings: ${estimated_savings:,.0f}")
+            st.write(f"Cash release opportunity: ${cash_release_opportunity:,.0f}")
+            st.subheader("Readiness Impact")
+            st.write(f"Current readiness is {readiness_percent}% with {high_risks} high-risk items requiring action.")
             st.subheader("Next Steps")
             st.write(f"Refresh the dashboard after each upload and route open issues to {integration_lead} and the correct functional owners.")
+
+        elif question == "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?":
+            st.subheader("Executive Summary")
+            st.write(
+                f"Start by launching the {workspace_name} workspace for {region}, validating chart of accounts mapping, reviewing the 12 legal entities for simplification, and aligning the 500-employee workforce structure to target Day 1 and Day 100 milestones."
+            )
+            st.subheader("Agent Capabilities Used")
+            st.write("- Integration Navigator")
+            st.write("- Finance & Account Mapping")
+            st.write("- Workforce & Organization Mapping")
+            st.write("- Legal Entity Optimization")
+            st.subheader("Recommended Actions")
+            st.write("1. Upload COA, legal entity, workforce, risk, and budget files.")
+            st.write("2. Review finance mapping gaps and workforce alignment dependencies.")
+            st.write("3. Identify legal entities that may be retained, merged, or dissolved.")
+            st.write(f"4. Assign {integration_lead} and functional owners to the highest-priority actions.")
+            st.subheader("Owners")
+            st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
+            st.subheader("Timeline")
+            st.write(f"Immediate mobilization, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
+            st.subheader("Risks")
+            st.write("COA misalignment, unresolved entity structure, and workforce mapping issues may delay readiness.")
+            st.subheader("Budget / Savings / Cash Impact")
+            st.write(f"Forecast spend: ${forecast_spend:,.0f}")
+            st.write(f"Estimated savings: ${estimated_savings:,.0f}")
+            st.write(f"Total value opportunity: ${total_value_opportunity:,.0f}")
+            st.subheader("Readiness Impact")
+            st.write(f"Readiness depends on finance mapping, workforce alignment, and legal entity simplification progress ahead of Day 1.")
+            st.subheader("Next Steps")
+            st.write("Complete data uploads, confirm SME coverage, and refresh the dashboard to validate integration readiness.")
 
         elif question == "Which legal entities can be merged or dissolved and what is the cash impact?":
             st.subheader("Executive Summary")
             st.write(
                 f"There are {len(merge_or_dissolve_entities)} legal entities currently flagged for merge or dissolve, with an estimated annual admin cost impact of ${annual_admin_cost_reduction:,.0f} and total action savings of ${total_action_savings:,.0f}."
             )
+            st.subheader("Agent Capabilities Used")
+            st.write("- Legal Entity Optimization")
+            st.write("- Budget & Value Tracking")
             st.subheader("Recommended Actions")
             st.write("Review the recommended_action column in the Legal Entities tab.")
             st.dataframe(
@@ -371,14 +416,21 @@ try:
                     "recommended_action",
                     "annual_admin_cost",
                     "saving_if_action_is_taken",
-                ]]
+                ]],
+                use_container_width=True,
             )
-            st.subheader("Owners / Functions")
+            st.subheader("Owners")
             st.write("Legal, Tax, Treasury, Integration Lead")
             st.subheader("Timeline")
             st.write("Assess in the current integration planning cycle")
-            st.subheader("Risks and Dependencies")
+            st.subheader("Risks")
             st.write("Active contracts, regulatory requirements, and incomplete information may block action.")
+            st.subheader("Budget / Savings / Cash Impact")
+            st.write(f"Annual admin cost impact: ${annual_admin_cost_reduction:,.0f}")
+            st.write(f"Action savings: ${total_action_savings:,.0f}")
+            st.write(f"Cash release opportunity: ${cash_release_opportunity:,.0f}")
+            st.subheader("Readiness Impact")
+            st.write("Entity simplification can reduce operational complexity and improve Day 100 stabilization.")
             st.subheader("Next Steps")
             st.write("Validate candidates and confirm whether the estimated admin cost reduction can be realized.")
 
@@ -389,14 +441,21 @@ try:
                 st.write(
                     f"The primary payroll SME for Japan is {payroll_row['primary_sme']}, with backup support from {payroll_row['backup_sme']}."
                 )
+                st.subheader("Agent Capabilities Used")
+                st.write("- SME Discovery")
+                st.write("- Workforce & Organization Mapping")
                 st.subheader("Recommended Actions")
                 st.write("Engage the primary SME first, then use the backup SME or escalation path if needed.")
-                st.subheader("Owners / Functions")
+                st.subheader("Owners")
                 st.write("HR, Payroll, Regional HR Leadership")
                 st.subheader("Timeline")
                 st.write("Immediate")
-                st.subheader("Risks and Dependencies")
+                st.subheader("Risks")
                 st.write("Delays in payroll setup can affect Day 1 readiness and employee experience.")
+                st.subheader("Budget / Savings / Cash Impact")
+                st.write("Payroll delays may increase transition costs and readiness risk if unresolved.")
+                st.subheader("Readiness Impact")
+                st.write("Payroll SME alignment supports workforce readiness and Day 1 employee continuity.")
                 st.subheader("Next Steps")
                 st.write(f"Contact {payroll_row['primary_sme']} and escalate via {payroll_row['escalation_path']} if required.")
             else:
