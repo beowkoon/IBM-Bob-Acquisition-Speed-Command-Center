@@ -83,6 +83,55 @@ def recommend_legal_entity_action(entity):
     return "Further Assessment"
 
 
+def get_legal_entity_reason(entity):
+    if entity["regulatory_required"] == "Yes":
+        return "Regulatory requirement exists"
+    if entity["employees"] == 0 and entity["annual_revenue"] == 0 and entity["active_contracts"] == "No":
+        return "No employees, no revenue, no active contracts"
+    if entity["duplicate_ibm_presence"] == "Yes" and entity["regulatory_required"] == "No":
+        return "Duplicate IBM presence exists"
+    return "Requires further assessment"
+
+
+def get_legal_entity_confidence(entity):
+    if entity["regulatory_required"] == "Yes":
+        return "High"
+    if entity["employees"] == 0 and entity["annual_revenue"] == 0 and entity["active_contracts"] == "No":
+        return "High"
+    if entity["duplicate_ibm_presence"] == "Yes" and entity["regulatory_required"] == "No":
+        return "Medium"
+    return "Low"
+
+
+def get_legal_entity_required_approval(entity):
+    if entity["recommended_action"] == "Retain":
+        return "Legal"
+    if entity["recommended_action"] == "Dissolve":
+        return "Legal / Tax"
+    if entity["recommended_action"] == "Merge":
+        return "Legal / Treasury"
+    return "Legal / Tax / Treasury"
+
+
+def get_legal_entity_compliance_risk(entity):
+    if entity["regulatory_required"] == "Yes":
+        return "High"
+    if entity["active_contracts"] == "Yes":
+        return "Medium"
+    return "Low"
+
+
+def calculate_readiness_score(status_series):
+    score_map = {
+        "Complete": 100,
+        "In Progress": 60,
+        "At Risk": 30,
+        "Not Started": 0,
+    }
+    total_score = status_series.map(score_map).fillna(0).sum()
+    return round(total_score / len(status_series)) if len(status_series) else 0
+
+
 def render_tab_header(title, summary):
     st.caption("Private and Confidential")
     st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
@@ -114,10 +163,15 @@ try:
             knowledge_library_text = knowledge_file.read()
 
     legal_entities["recommended_action"] = legal_entities.apply(recommend_legal_entity_action, axis=1)
+    legal_entities["recommendation_reason"] = legal_entities.apply(get_legal_entity_reason, axis=1)
+    legal_entities["confidence_level"] = legal_entities.apply(get_legal_entity_confidence, axis=1)
+    legal_entities["required_approval"] = legal_entities.apply(get_legal_entity_required_approval, axis=1)
+    legal_entities["compliance_risk"] = legal_entities.apply(get_legal_entity_compliance_risk, axis=1)
+    legal_entities["estimated_recurring_savings_example"] = legal_entities["saving_if_action_is_taken"]
 
     completed_areas = (integration_status["status"] == "Complete").sum()
     total_areas = len(integration_status)
-    readiness_percent = round((completed_areas / total_areas) * 100) if total_areas else 0
+    readiness_percent = calculate_readiness_score(integration_status["status"])
     high_risks = (risks["severity"] == "High").sum()
     critical_risks = (risks["severity"] == "Critical").sum()
     total_budget = budget["budget"].sum()
@@ -219,14 +273,15 @@ try:
 
         with center_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.subheader("IBM Bob Chat")
-            st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
-            st.write(f"Integration lead: {integration_lead}")
-            st.write(f"Region: {region}")
-            st.write(f"Day 1 target: {day_1_date} | Day 100 target: {day_100_date}")
-            st.write(f"{len(merge_or_dissolve_entities)} legal entities are flagged for merge or dissolve review.")
-            st.write(f"The current estimated annual admin cost opportunity is ${annual_admin_cost_reduction:,.0f}.")
-            st.write(f"The total savings if recommended actions are taken is ${total_action_savings:,.0f}.")
+            st.subheader("Ask IBM Bob")
+            st.write("Ask IBM Bob anything about this acquisition integration.")
+            st.text_area(
+                "",
+                value="We acquired a company with different COA, 12 legal entities, 500 employees and incomplete tax registration. What should we do first?",
+                height=120,
+                key="dashboard_bob_question",
+            )
+            st.caption("Use the IBM Bob Q&A tab to view the structured response.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with right_col:
@@ -303,7 +358,22 @@ try:
         legal_metric_col1.metric("Entities Tracked", len(legal_entities))
         legal_metric_col2.metric("Merge/Dissolve Candidates", len(merge_or_dissolve_entities))
         legal_metric_col3.metric("Action Savings", f"${total_action_savings:,.0f}")
-        st.dataframe(legal_entities, use_container_width=True)
+        st.dataframe(
+            legal_entities[[
+                "entity_name",
+                "recommended_action",
+                "recommendation_reason",
+                "confidence_level",
+                "required_approval",
+                "compliance_risk",
+                "estimated_recurring_savings_example",
+                "external_auditors",
+                "annual_audit_fees",
+                "annual_admin_cost",
+                "saving_if_action_is_taken",
+            ]],
+            use_container_width=True,
+        )
         st.subheader("Totals")
         st.dataframe(legal_entity_totals, use_container_width=True)
 
@@ -328,6 +398,11 @@ try:
         render_tab_header(
             "IBM Bob Q&A",
             "Use structured IBM Bob responses to guide actions, identify owners, and accelerate acquisition decision-making.",
+        )
+        st.write("Ask IBM Bob anything about this acquisition integration. Example")
+        st.code(
+            "We acquired a company with different COA, 12 legal entities, 500 employees and incomplete tax registration. What should we do first?",
+            language="text",
         )
         question = st.selectbox(
             "Select a sample question",
