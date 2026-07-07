@@ -71,6 +71,7 @@ with date_col2:
 st.subheader(f"Prototype Dashboard - {workspace_name}")
 
 st.write("This is the initial prototype for acquisition integration tracking.")
+st.write("Bob is the single front door for acquisition integration — combining uploaded data, IBM knowledge, live metrics and agentic guidance to accelerate Day 1 to Day 100 execution.")
 
 
 def recommend_legal_entity_action(entity):
@@ -275,13 +276,35 @@ try:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.subheader("Ask IBM Bob")
             st.write("Ask IBM Bob anything about this acquisition integration.")
-            st.text_area(
+            dashboard_bob_question = st.text_area(
                 "",
                 value="We acquired a company with different COA, 12 legal entities, 500 employees and incomplete tax registration. What should we do first?",
                 height=120,
                 key="dashboard_bob_question",
             )
-            st.caption("Use the IBM Bob Q&A tab to view the structured response.")
+            if st.button("Ask Bob", key="dashboard_ask_bob"):
+                if dashboard_bob_question:
+                    st.subheader("Executive Summary")
+                    st.write(
+                        f"IBM Bob reviewed the current workspace, readiness of {readiness_percent}%, {high_risks} high-risk items, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
+                    )
+                    st.subheader("Agent Capabilities Used")
+                    st.write("- Integration Navigator")
+                    st.write("- Risk & Controls Agent")
+                    st.write("- Budget & Value Tracking Agent")
+                    st.write("- Legal Entity Optimization Agent")
+                    st.subheader("Recommended Actions")
+                    st.write("1. Validate uploaded acquisition data.")
+                    st.write("2. Review high-risk integration blockers.")
+                    st.write("3. Confirm account, workforce and legal entity mapping.")
+                    st.write("4. Assign SMEs and owners for all open actions.")
+                    st.write("5. Refresh dashboard before Day 1 readiness review.")
+                    st.subheader("Budget / Savings / Cash Impact")
+                    st.write(f"Estimated savings: ${estimated_savings:,.0f}")
+                    st.write(f"Legal entity action savings: ${total_action_savings:,.0f}")
+                    st.write(f"Total value opportunity: ${estimated_savings + total_action_savings:,.0f}")
+                    st.subheader("Next Steps")
+                    st.write(f"Integration lead {integration_lead} should review risks, legal entity candidates and readiness gaps.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with right_col:
