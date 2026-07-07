@@ -284,27 +284,81 @@ try:
             )
             if st.button("Ask Bob", key="dashboard_ask_bob"):
                 if dashboard_bob_question:
+                    question_lower = dashboard_bob_question.lower()
+
                     st.subheader("Executive Summary")
-                    st.write(
-                        f"IBM Bob reviewed the current workspace, readiness of {readiness_percent}%, {high_risks} high-risk items, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
-                    )
-                    st.subheader("Agent Capabilities Used")
-                    st.write("- Integration Navigator")
-                    st.write("- Risk & Controls Agent")
-                    st.write("- Budget & Value Tracking Agent")
-                    st.write("- Legal Entity Optimization Agent")
-                    st.subheader("Recommended Actions")
-                    st.write("1. Validate uploaded acquisition data.")
-                    st.write("2. Review high-risk integration blockers.")
-                    st.write("3. Confirm account, workforce and legal entity mapping.")
-                    st.write("4. Assign SMEs and owners for all open actions.")
-                    st.write("5. Refresh dashboard before Day 1 readiness review.")
-                    st.subheader("Budget / Savings / Cash Impact")
-                    st.write(f"Estimated savings: ${estimated_savings:,.0f}")
-                    st.write(f"Legal entity action savings: ${total_action_savings:,.0f}")
-                    st.write(f"Total value opportunity: ${estimated_savings + total_action_savings:,.0f}")
-                    st.subheader("Next Steps")
-                    st.write(f"Integration lead {integration_lead} should review risks, legal entity candidates and readiness gaps.")
+                    if "legal entity" in question_lower:
+                        st.write(
+                            f"IBM Bob identified {len(merge_or_dissolve_entities)} legal entities for merge or dissolve review, with action savings of ${total_action_savings:,.0f}."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- Legal Entity Optimization Agent")
+                        st.write("- Budget & Value Tracking Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Review entity-level recommendations and approval needs.")
+                        st.write("2. Validate compliance, contracts, and tax dependencies.")
+                        st.write("3. Confirm savings potential before execution.")
+                        st.subheader("Next Steps")
+                        st.write("Open the Legal Entities tab and validate candidates for merge or dissolve.")
+                    elif "payroll" in question_lower or "japan" in question_lower:
+                        st.write(
+                            "IBM Bob identified the payroll SME routing path for Japan and highlighted the readiness dependency for Day 1 employee continuity."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- SME Discovery Agent")
+                        st.write("- Workforce & Organization Mapping Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Contact the primary payroll SME.")
+                        st.write("2. Confirm payroll setup timeline and escalation path.")
+                        st.write("3. Track any Day 1 payroll risks.")
+                        st.subheader("Next Steps")
+                        st.write("Open the SME Directory tab and engage the Japan payroll SME immediately.")
+                    elif "budget" in question_lower:
+                        st.write(
+                            f"IBM Bob reviewed integration spend and found forecast spend of ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}, with estimated savings of ${estimated_savings:,.0f}."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- Budget & Value Tracking Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Review current spend against plan.")
+                        st.write("2. Validate the forecast and savings assumptions.")
+                        st.write("3. Escalate any overspend risks.")
+                        st.subheader("Next Steps")
+                        st.write("Open the Budget tab to review detailed budget and totals.")
+                    elif "coa" in question_lower or "account" in question_lower:
+                        st.write(
+                            "IBM Bob identified finance mapping as the first priority and recommends validating chart of accounts alignment before Day 1 readiness review."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- Finance & Account Mapping Agent")
+                        st.write("- Integration Navigator Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Upload and validate chart of accounts files.")
+                        st.write("2. Map key accounts to the target structure.")
+                        st.write("3. Review unresolved mapping dependencies with Finance.")
+                        st.subheader("Next Steps")
+                        st.write("Coordinate with Finance to validate COA mapping and readiness blockers.")
+                    else:
+                        st.write(
+                            f"IBM Bob reviewed the current workspace, readiness of {readiness_percent}%, {high_risks} high-risk items, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- Integration Navigator")
+                        st.write("- Risk & Controls Agent")
+                        st.write("- Budget & Value Tracking Agent")
+                        st.write("- Legal Entity Optimization Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Validate uploaded acquisition data.")
+                        st.write("2. Review high-risk integration blockers.")
+                        st.write("3. Confirm account, workforce and legal entity mapping.")
+                        st.write("4. Assign SMEs and owners for all open actions.")
+                        st.write("5. Refresh dashboard before Day 1 readiness review.")
+                        st.subheader("Budget / Savings / Cash Impact")
+                        st.write(f"Estimated savings: ${estimated_savings:,.0f}")
+                        st.write(f"Legal entity action savings: ${total_action_savings:,.0f}")
+                        st.write(f"Total value opportunity: ${estimated_savings + total_action_savings:,.0f}")
+                        st.subheader("Next Steps")
+                        st.write(f"Integration lead {integration_lead} should review risks, legal entity candidates and readiness gaps.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with right_col:
