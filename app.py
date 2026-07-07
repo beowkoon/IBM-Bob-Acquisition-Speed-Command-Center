@@ -119,6 +119,7 @@ try:
     total_areas = len(integration_status)
     readiness_percent = round((completed_areas / total_areas) * 100) if total_areas else 0
     high_risks = (risks["severity"] == "High").sum()
+    critical_risks = (risks["severity"] == "Critical").sum()
     total_budget = budget["budget"].sum()
     forecast_spend = budget["forecast_spend"].sum()
     estimated_savings = budget["estimated_savings"].sum()
@@ -127,6 +128,10 @@ try:
     ]
     annual_admin_cost_reduction = merge_or_dissolve_entities["annual_admin_cost"].sum()
     total_action_savings = merge_or_dissolve_entities["saving_if_action_is_taken"].sum()
+    total_value_opportunity = estimated_savings + total_action_savings
+    cash_release_opportunity = annual_admin_cost_reduction
+    sme_actions_required = len(risks)
+    knowledge_files_loaded = 1 if knowledge_library_text.strip() else 0
     budget_totals = pd.DataFrame(
         [
             {
@@ -184,19 +189,37 @@ try:
         st.write(
             "This dashboard summarizes acquisition integration readiness, risk exposure, budget outlook, legal entity actions, and SME support for the current workspace."
         )
-        col1, col2, col3, col4 = st.columns(4)
+        metric_row_1 = st.columns(4)
+        metric_row_2 = st.columns(4)
 
-        col1.metric("Readiness %", f"{readiness_percent}%")
-        col2.metric("High Risks", high_risks)
-        col3.metric("Forecast Spend", f"${forecast_spend:,.0f}")
-        col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+        metric_row_1[0].metric("Overall Readiness", f"{readiness_percent}%")
+        metric_row_1[1].metric("High / Critical Risks", f"{high_risks} / {critical_risks}")
+        metric_row_1[2].metric("Forecast Spend", f"${forecast_spend:,.0f}")
+        metric_row_1[3].metric("Total Value Opportunity", f"${total_value_opportunity:,.0f}")
+
+        metric_row_2[0].metric("Cash Release Opportunity", f"${cash_release_opportunity:,.0f}")
+        metric_row_2[1].metric("Legal Entities to Simplify", len(merge_or_dissolve_entities))
+        metric_row_2[2].metric("SME Actions Required", sme_actions_required)
+        metric_row_2[3].metric("Knowledge Files Loaded", knowledge_files_loaded)
         st.caption(f"Total Budget: ${total_budget:,.0f}")
 
-        summary_col, highlights_col = st.columns(2)
+        left_col, center_col, right_col = st.columns([1, 1.2, 1])
 
-        with summary_col:
+        with left_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.subheader("Current Workspace Summary")
+            st.subheader("Integration Journey")
+            st.write("1. Due Diligence")
+            st.write("2. Day 1 Readiness")
+            st.write("3. Finance Mapping")
+            st.write("4. Workforce Alignment")
+            st.write("5. Systems and Controls")
+            st.write("6. Legal Entity Simplification")
+            st.write("7. Steady State")
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with center_col:
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+            st.subheader("IBM Bob Chat")
             st.write(f"{total_areas} integration areas are being tracked in {workspace_name}.")
             st.write(f"Integration lead: {integration_lead}")
             st.write(f"Region: {region}")
@@ -206,13 +229,23 @@ try:
             st.write(f"The total savings if recommended actions are taken is ${total_action_savings:,.0f}.")
             st.markdown("</div>", unsafe_allow_html=True)
 
-        with highlights_col:
+        with right_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.subheader("Key Highlights")
+            st.subheader("Live Command Center Metrics")
             st.info(f"{high_risks} high-risk items currently need executive attention.")
             st.info(f"Forecast spend is ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}.")
             st.info(f"Estimated savings currently total ${estimated_savings:,.0f}.")
             st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+        st.subheader("Target Outcomes")
+        outcome_col1, outcome_col2, outcome_col3, outcome_col4, outcome_col5 = st.columns(5)
+        outcome_col1.metric("Planning Time Reduced", "45%")
+        outcome_col2.metric("SME Search Time Reduced", "60%")
+        outcome_col3.metric("Mapping Effort Reduced", "35%")
+        outcome_col4.metric("Readiness Review Accelerated", "50%")
+        outcome_col5.metric("Estimated Value Opportunity", "$1.3M")
+        st.markdown("</div>", unsafe_allow_html=True)
 
         chart_col1, chart_col2 = st.columns(2)
 
