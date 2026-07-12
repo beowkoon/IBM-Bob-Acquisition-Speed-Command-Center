@@ -448,6 +448,31 @@ try:
                 st.write("Unresolved COA mapping blocks the first consolidated close and financial reporting.")
                 st.subheader("Next Steps")
                 st.write("Coordinate with Finance SME to validate COA mapping and confirm close calendar alignment.")
+            elif "risk" in question_lower or "highest risk" in question_lower or "critical" in question_lower:
+                top_risks = risks[risks["severity"].isin(["Critical", "High"])].head(5)
+                st.write(
+                    f"IBM Bob identified {critical_risks} Critical and {high_risks} High risks in the current integration. The highest priority risk is: '{risks.iloc[0]['risk']}' — owned by {risks.iloc[0]['owner']}."
+                )
+                st.subheader("Agent Capabilities Used")
+                st.write("- Risk & Controls Agent")
+                st.write("- Integration Navigator Agent")
+                st.subheader("Top Critical & High Risks")
+                st.dataframe(top_risks[["risk_id", "severity", "risk", "owner", "status", "mitigation"]], use_container_width=True)
+                st.subheader("Recommended Actions")
+                st.write(f"1. Escalate all {critical_risks} Critical risks to the executive sponsor immediately.")
+                st.write(f"2. Assign mitigation plans to all {high_risks} High risks within 48 hours.")
+                st.write("3. Review the full risk register in the Risks tab.")
+                st.write("4. Schedule a weekly risk review with all workstream owners.")
+                st.subheader("Owners")
+                st.write(f"{integration_lead}, workstream owners per risk area")
+                st.subheader("Timeline")
+                st.write("Critical risks: resolve before Day 1. High risks: within first 2 weeks.")
+                st.subheader("Risks")
+                st.write("Unowned or unmitigated risks linked to Day 1 activities may block readiness.")
+                st.subheader("Budget / Savings / Cash Impact")
+                st.write("Unresolved risks may increase integration cost and delay value realization.")
+                st.subheader("Next Steps")
+                st.write("Open the Risks tab to review the full register and confirm all items have owners and mitigation plans.")
             elif "tax" in question_lower:
                 st.write(
                     "IBM Bob identified tax registration gaps as a Critical Day 1 blocker. Incomplete tax registration prevents revenue recognition and increases compliance risk."
@@ -465,6 +490,66 @@ try:
                 st.write("Non-compliance with tax registration requirements may result in penalties and revenue recognition delays.")
                 st.subheader("Next Steps")
                 st.write("Open the Risks tab and review R006. Escalate to the Regional Tax Lead today.")
+            elif "hr" in question_lower or "workforce" in question_lower or "employee" in question_lower or "headcount" in question_lower:
+                st.write(
+                    f"IBM Bob identified workforce alignment as a key Day 100 dependency. HR integration covers headcount, compensation, benefits, reporting lines, and change management for all acquired employees."
+                )
+                st.subheader("Agent Capabilities Used")
+                st.write("- Workforce & Organization Mapping Agent")
+                st.write("- SME Discovery Agent")
+                st.subheader("Recommended Actions")
+                st.write("1. Upload headcount and compensation data for all acquired employees.")
+                st.write("2. Confirm reporting lines and role changes before Day 100.")
+                st.write("3. Ensure all employees receive integration communications within Week 1.")
+                st.write("4. Engage HR SME to lead change management through to Day 100.")
+                st.subheader("Owners")
+                st.write(f"{integration_lead}, HR, Regional HR Leadership")
+                st.subheader("Timeline")
+                st.write(f"Payroll continuity by Day 1 ({day_1_date}). Full workforce alignment by Day 100 ({day_100_date}).")
+                st.subheader("Risks")
+                st.write("Unresolved reporting lines and delayed HR data migration may affect employee confidence and Day 1 readiness.")
+                st.subheader("Budget / Savings / Cash Impact")
+                st.write("HR integration delays may increase transition costs and extend the integration timeline.")
+                st.subheader("Next Steps")
+                st.write("Open the SME Directory and engage the HR Integration SME. Confirm payroll continuity plan for Day 1.")
+            elif "sme" in question_lower or "who can help" in question_lower or "contact" in question_lower or "expert" in question_lower:
+                st.write(
+                    f"IBM Bob identified {len(sme_directory)} SME records across {sme_directory['function'].nunique()} functions and {sme_directory['geography'].nunique()} geographies. Use the SME Directory to find the right owner for each integration question."
+                )
+                st.subheader("Agent Capabilities Used")
+                st.write("- SME Discovery Agent")
+                st.subheader("SME Directory Overview")
+                st.dataframe(sme_directory[["function", "geography", "primary_sme", "backup_sme", "escalation_path"]], use_container_width=True)
+                st.subheader("Recommended Actions")
+                st.write("1. Search the SME Directory by function or geography.")
+                st.write("2. Contact the primary SME first, then backup, then escalation path.")
+                st.write("3. Flag any SME coverage gaps to the Integration Lead within 24 hours.")
+                st.subheader("Owners")
+                st.write(f"{integration_lead}, functional leads per workstream")
+                st.subheader("Next Steps")
+                st.write("Open the SME Directory tab and search for your function or geography.")
+            elif "readiness" in question_lower or "day 1" in question_lower or "day one" in question_lower:
+                st.write(
+                    f"Current integration readiness is {readiness_percent}%. {int(completed_areas)} of {total_areas} workstreams are complete. {int(at_risk_areas)} are At Risk and {int(not_started_areas)} have not started."
+                )
+                st.subheader("Agent Capabilities Used")
+                st.write("- Integration Readiness Agent")
+                st.write("- Risk & Controls Agent")
+                st.subheader("Readiness by Status")
+                st.dataframe(integration_status[["area", "status", "owner"]], use_container_width=True)
+                st.subheader("Recommended Actions")
+                st.write(f"1. Resolve all {int(at_risk_areas)} At Risk workstreams before Day 1.")
+                st.write(f"2. Assign owners to all {int(not_started_areas)} Not Started workstreams immediately.")
+                st.write("3. Schedule a Day 1 readiness review 2 weeks before the target date.")
+                st.write("4. Confirm payroll, systems access, and legal entity structure are all cleared.")
+                st.subheader("Owners")
+                st.write(f"{integration_lead}, all workstream owners")
+                st.subheader("Timeline")
+                st.write(f"Day 1 target: {day_1_date}. Day 100 target: {day_100_date}.")
+                st.subheader("Risks")
+                st.write("At Risk and Not Started workstreams are the primary threats to Day 1 readiness.")
+                st.subheader("Next Steps")
+                st.write("Open the Integration Status tab and address all At Risk items before the next checkpoint.")
             else:
                 st.write(
                     f"IBM Bob reviewed the current workspace: readiness at {readiness_percent}%, {critical_risks} critical and {high_risks} high-risk items open, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
