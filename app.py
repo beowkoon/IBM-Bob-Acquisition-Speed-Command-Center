@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
 
@@ -606,13 +608,51 @@ try:
 
         chart_col1, chart_col2 = st.columns(2)
         with chart_col1:
-            st.subheader("Budget Overview by Category")
-            st.bar_chart(budget_chart_data)
+            fig_budget = px.bar(
+                budget,
+                x="category",
+                y=["budget", "actual_spend", "forecast_spend"],
+                barmode="group",
+                title="Budget Overview by Category (USD)",
+                labels={"value": "Amount (USD)", "category": "Category", "variable": "Type"},
+                color_discrete_map={"budget": "#0f62fe", "actual_spend": "#42be65", "forecast_spend": "#f1c21b"},
+            )
+            fig_budget.update_layout(legend_title_text="", xaxis_title="Category", yaxis_title="Amount (USD)", yaxis_tickformat="$,.0f")
+            st.plotly_chart(fig_budget, use_container_width=True)
         with chart_col2:
-            st.subheader("Legal Entity Actions")
-            st.bar_chart(legal_action_counts)
-        st.subheader("Integration Status Overview")
-        st.bar_chart(status_counts)
+            legal_action_df = legal_action_counts.reset_index()
+            legal_action_df.columns = ["Action", "Count"]
+            color_map = {"Retain": "#42be65", "Merge": "#f1c21b", "Dissolve": "#fa4d56", "Further Assessment": "#8a3ffc"}
+            fig_legal = px.bar(
+                legal_action_df,
+                x="Action",
+                y="Count",
+                title="Legal Entity Actions",
+                labels={"Count": "Number of Entities", "Action": "Recommended Action"},
+                color="Action",
+                color_discrete_map=color_map,
+                text="Count",
+            )
+            fig_legal.update_traces(textposition="outside")
+            fig_legal.update_layout(showlegend=False, xaxis_title="Recommended Action", yaxis_title="Number of Entities", yaxis_dtick=1)
+            st.plotly_chart(fig_legal, use_container_width=True)
+
+        status_df = status_counts.reset_index()
+        status_df.columns = ["Status", "Count"]
+        status_color_map = {"Complete": "#42be65", "In Progress": "#f1c21b", "At Risk": "#fa4d56", "Not Started": "#8d8d8d"}
+        fig_status = px.bar(
+            status_df,
+            x="Status",
+            y="Count",
+            title="Integration Status Overview — Number of Workstreams by Status",
+            labels={"Count": "Number of Workstreams", "Status": "Integration Status"},
+            color="Status",
+            color_discrete_map=status_color_map,
+            text="Count",
+        )
+        fig_status.update_traces(textposition="outside")
+        fig_status.update_layout(showlegend=False, xaxis_title="Integration Status", yaxis_title="Number of Workstreams", yaxis_dtick=1)
+        st.plotly_chart(fig_status, use_container_width=True)
 
     # ── INTEGRATION STATUS TAB ─────────────────────────────────────────────────
     with status_tab:
@@ -698,7 +738,17 @@ try:
         budget_metric_col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
         st.markdown("---")
         st.subheader("Budget by Category")
-        st.bar_chart(budget_chart_data)
+        fig_budget_tab = px.bar(
+            budget,
+            x="category",
+            y=["budget", "actual_spend", "forecast_spend", "estimated_savings"],
+            barmode="group",
+            title="Budget vs Actual vs Forecast vs Savings by Category (USD)",
+            labels={"value": "Amount (USD)", "category": "Category", "variable": "Type"},
+            color_discrete_map={"budget": "#0f62fe", "actual_spend": "#42be65", "forecast_spend": "#f1c21b", "estimated_savings": "#8a3ffc"},
+        )
+        fig_budget_tab.update_layout(legend_title_text="", xaxis_title="Category", yaxis_title="Amount (USD)", yaxis_tickformat="$,.0f")
+        st.plotly_chart(fig_budget_tab, use_container_width=True)
         st.subheader("Detail")
         st.dataframe(budget, use_container_width=True)
         st.subheader("Totals")
