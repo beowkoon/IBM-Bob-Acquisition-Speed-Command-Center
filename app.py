@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
+
 st.markdown(
     """
     <style>
@@ -39,25 +41,65 @@ st.markdown(
         font-weight: 700;
     }
     .executive-banner {
-        background-color: #0f62fe;
+        background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%);
         color: white;
-        padding: 20px 24px;
+        padding: 24px 28px;
         border-radius: 14px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
     }
     .executive-card {
         background-color: #ffffff;
         border: 1px solid #dfe3e8;
         border-radius: 14px;
-        padding: 18px;
+        padding: 20px;
         margin-bottom: 16px;
+    }
+    .badge-complete {
+        background-color: #d4edda; color: #155724;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-inprogress {
+        background-color: #fff3cd; color: #856404;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-atrisk {
+        background-color: #f8d7da; color: #721c24;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-notstarted {
+        background-color: #e2e3e5; color: #383d41;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-critical {
+        background-color: #6f0000; color: #ffffff;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-high {
+        background-color: #f8d7da; color: #721c24;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge-medium {
+        background-color: #fff3cd; color: #856404;
+        padding: 3px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+    }
+    .risk-row {
+        background-color: #ffffff;
+        border: 1px solid #dfe3e8;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 8px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
-st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
 
 st.title("IBM Bob Acquisition Speed Command Center")
 workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
@@ -69,8 +111,6 @@ with date_col1:
 with date_col2:
     day_100_date = st.date_input("Day 100 Target Date")
 st.subheader(f"Prototype Dashboard - {workspace_name}")
-
-st.write("This is the initial prototype for acquisition integration tracking.")
 st.write("Bob is the single front door for acquisition integration — combining uploaded data, IBM knowledge, live metrics and agentic guidance to accelerate Day 1 to Day 100 execution.")
 
 
@@ -133,6 +173,27 @@ def calculate_readiness_score(status_series):
     return round(total_score / len(status_series)) if len(status_series) else 0
 
 
+def status_badge(status):
+    mapping = {
+        "Complete": "badge-complete",
+        "In Progress": "badge-inprogress",
+        "At Risk": "badge-atrisk",
+        "Not Started": "badge-notstarted",
+    }
+    css = mapping.get(status, "badge-notstarted")
+    return f"<span class='{css}'>{status}</span>"
+
+
+def severity_badge(severity):
+    mapping = {
+        "Critical": "badge-critical",
+        "High": "badge-high",
+        "Medium": "badge-medium",
+    }
+    css = mapping.get(severity, "badge-medium")
+    return f"<span class='{css}'>{severity}</span>"
+
+
 def render_tab_header(title, summary):
     st.caption("Private and Confidential")
     st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
@@ -142,12 +203,15 @@ def render_tab_header(title, summary):
 
 
 st.sidebar.header("Data Upload Center")
-uploaded_integration_status = st.sidebar.file_uploader("Upload integration status CSV", type="csv")
-uploaded_risks = st.sidebar.file_uploader("Upload risks CSV", type="csv")
-uploaded_budget = st.sidebar.file_uploader("Upload budget CSV", type="csv")
-uploaded_legal_entities = st.sidebar.file_uploader("Upload legal entities CSV", type="csv")
-uploaded_sme_directory = st.sidebar.file_uploader("Upload SME directory CSV", type="csv")
-uploaded_knowledge_library = st.sidebar.file_uploader("Upload knowledge library TXT", type="txt")
+st.sidebar.caption("Upload your own files to replace the sample data below.")
+uploaded_integration_status = st.sidebar.file_uploader("Integration status CSV", type="csv")
+uploaded_risks = st.sidebar.file_uploader("Risks CSV", type="csv")
+uploaded_budget = st.sidebar.file_uploader("Budget CSV", type="csv")
+uploaded_legal_entities = st.sidebar.file_uploader("Legal entities CSV", type="csv")
+uploaded_sme_directory = st.sidebar.file_uploader("SME directory CSV", type="csv")
+uploaded_knowledge_library = st.sidebar.file_uploader("Knowledge library TXT", type="txt")
+st.sidebar.markdown("---")
+st.sidebar.caption("IBM Bob Acquisition Speed Command Center v1.0")
 
 
 try:
@@ -171,11 +235,15 @@ try:
     legal_entities["estimated_recurring_savings_example"] = legal_entities["saving_if_action_is_taken"]
 
     completed_areas = (integration_status["status"] == "Complete").sum()
+    at_risk_areas = (integration_status["status"] == "At Risk").sum()
+    not_started_areas = (integration_status["status"] == "Not Started").sum()
     total_areas = len(integration_status)
     readiness_percent = calculate_readiness_score(integration_status["status"])
-    high_risks = (risks["severity"] == "High").sum()
     critical_risks = (risks["severity"] == "Critical").sum()
+    high_risks = (risks["severity"] == "High").sum()
+    medium_risks = (risks["severity"] == "Medium").sum()
     total_budget = budget["budget"].sum()
+    actual_spend = budget["actual_spend"].sum()
     forecast_spend = budget["forecast_spend"].sum()
     estimated_savings = budget["estimated_savings"].sum()
     merge_or_dissolve_entities = legal_entities[
@@ -187,6 +255,8 @@ try:
     cash_release_opportunity = annual_admin_cost_reduction
     sme_actions_required = len(risks)
     knowledge_files_loaded = 1 if knowledge_library_text.strip() else 0
+    budget_variance_pct = round(((forecast_spend - total_budget) / total_budget) * 100, 1) if total_budget else 0
+
     budget_totals = pd.DataFrame(
         [
             {
@@ -228,48 +298,66 @@ try:
         ]
     )
 
+    # ── DASHBOARD TAB ──────────────────────────────────────────────────────────
     with dashboard_tab:
         st.caption("Private and Confidential")
         st.markdown(
             f"""
             <div class="executive-banner">
                 <div style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">Executive Integration Dashboard</div>
-                <div style="font-size: 15px;">{workspace_name} | {region} | Integration Lead: {integration_lead}</div>
-                <div style="font-size: 14px; margin-top: 6px;">Day 1: {day_1_date} | Day 100: {day_100_date}</div>
+                <div style="font-size: 15px;">{workspace_name} &nbsp;|&nbsp; {region} &nbsp;|&nbsp; Integration Lead: {integration_lead}</div>
+                <div style="font-size: 14px; margin-top: 6px; opacity: 0.85;">Day 1: {day_1_date} &nbsp;&nbsp; Day 100: {day_100_date}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-        st.header("Dashboard Metrics")
+
+        st.header("Executive Scorecard")
         st.write(
-            "This dashboard summarizes acquisition integration readiness, risk exposure, budget outlook, legal entity actions, and SME support for the current workspace."
+            "Live integration metrics across readiness, risk, budget, legal entity simplification, and SME coverage."
         )
+
         metric_row_1 = st.columns(4)
         metric_row_2 = st.columns(4)
 
-        metric_row_1[0].metric("Overall Readiness", f"{readiness_percent}%")
-        metric_row_1[1].metric("High / Critical Risks", f"{high_risks} / {critical_risks}")
-        metric_row_1[2].metric("Forecast Spend", f"${forecast_spend:,.0f}")
+        metric_row_1[0].metric("Overall Readiness", f"{readiness_percent}%", delta=f"{completed_areas}/{total_areas} areas complete")
+        metric_row_1[1].metric("Critical / High Risks", f"{critical_risks} / {high_risks}", delta=f"{medium_risks} medium risks", delta_color="inverse")
+        metric_row_1[2].metric("Forecast Spend", f"${forecast_spend:,.0f}", delta=f"{budget_variance_pct:+.1f}% vs budget", delta_color="inverse")
         metric_row_1[3].metric("Total Value Opportunity", f"${total_value_opportunity:,.0f}")
 
         metric_row_2[0].metric("Cash Release Opportunity", f"${cash_release_opportunity:,.0f}")
-        metric_row_2[1].metric("Legal Entities to Simplify", len(merge_or_dissolve_entities))
-        metric_row_2[2].metric("SME Actions Required", sme_actions_required)
+        metric_row_2[1].metric("Legal Entities to Simplify", len(merge_or_dissolve_entities), delta=f"of {len(legal_entities)} total entities")
+        metric_row_2[2].metric("Open Risk Actions", sme_actions_required)
         metric_row_2[3].metric("Knowledge Files Loaded", knowledge_files_loaded)
-        st.caption(f"Total Budget: ${total_budget:,.0f}")
+        st.caption(f"Total Budget: ${total_budget:,.0f}  |  Actual Spend to Date: ${actual_spend:,.0f}  |  Estimated Savings: ${estimated_savings:,.0f}")
+
+        # Readiness progress bar
+        st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+        st.subheader("Integration Readiness Progress")
+        st.progress(readiness_percent / 100)
+        rcol1, rcol2, rcol3, rcol4 = st.columns(4)
+        rcol1.metric("Complete", int(completed_areas))
+        rcol2.metric("In Progress", int((integration_status["status"] == "In Progress").sum()))
+        rcol3.metric("At Risk", int(at_risk_areas))
+        rcol4.metric("Not Started", int(not_started_areas))
+        st.markdown("</div>", unsafe_allow_html=True)
 
         left_col, center_col, right_col = st.columns([1, 1.2, 1])
 
         with left_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.subheader("Integration Journey")
-            st.write("1. Due Diligence")
-            st.write("2. Day 1 Readiness")
-            st.write("3. Finance Mapping")
-            st.write("4. Workforce Alignment")
-            st.write("5. Systems and Controls")
-            st.write("6. Legal Entity Simplification")
-            st.write("7. Steady State")
+            journey_steps = [
+                ("1", "Due Diligence", "Complete"),
+                ("2", "Day 1 Readiness", "In Progress"),
+                ("3", "Finance Mapping", "In Progress"),
+                ("4", "Workforce Alignment", "Not Started"),
+                ("5", "Systems and Controls", "At Risk"),
+                ("6", "Legal Entity Simplification", "In Progress"),
+                ("7", "Steady State", "Not Started"),
+            ]
+            for num, step, status in journey_steps:
+                st.markdown(f"{num}. {step} &nbsp; {status_badge(status)}", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
         with center_col:
@@ -285,19 +373,24 @@ try:
             if st.button("Ask Bob", key="dashboard_ask_bob"):
                 if dashboard_bob_question:
                     question_lower = dashboard_bob_question.lower()
-
                     st.subheader("Executive Summary")
-                    if "legal entity" in question_lower:
+                    if "legal entity" in question_lower or "entities" in question_lower:
                         st.write(
-                            f"IBM Bob identified {len(merge_or_dissolve_entities)} legal entities for merge or dissolve review, with action savings of ${total_action_savings:,.0f}."
+                            f"IBM Bob identified {len(merge_or_dissolve_entities)} legal entities for merge or dissolve review, with total action savings of ${total_action_savings:,.0f} and annual admin cost reduction of ${annual_admin_cost_reduction:,.0f}."
                         )
                         st.subheader("Agent Capabilities Used")
                         st.write("- Legal Entity Optimization Agent")
                         st.write("- Budget & Value Tracking Agent")
                         st.subheader("Recommended Actions")
-                        st.write("1. Review entity-level recommendations and approval needs.")
-                        st.write("2. Validate compliance, contracts, and tax dependencies.")
-                        st.write("3. Confirm savings potential before execution.")
+                        st.write("1. Review entity-level recommendations and confirm approval requirements.")
+                        st.write("2. Validate compliance risk, active contracts, and tax dependencies.")
+                        st.write("3. Obtain Legal, Tax, and Treasury sign-off before executing any action.")
+                        st.subheader("Owners")
+                        st.write(f"{integration_lead}, Legal, Tax, Treasury")
+                        st.subheader("Risks")
+                        st.write("Active contracts or regulatory gaps may block dissolution or merger actions.")
+                        st.subheader("Budget / Savings / Cash Impact")
+                        st.write(f"Action savings: ${total_action_savings:,.0f}  |  Admin cost reduction: ${annual_admin_cost_reduction:,.0f}")
                         st.subheader("Next Steps")
                         st.write("Open the Legal Entities tab and validate candidates for merge or dissolve.")
                     elif "payroll" in question_lower or "japan" in question_lower:
@@ -308,65 +401,107 @@ try:
                         st.write("- SME Discovery Agent")
                         st.write("- Workforce & Organization Mapping Agent")
                         st.subheader("Recommended Actions")
-                        st.write("1. Contact the primary payroll SME.")
-                        st.write("2. Confirm payroll setup timeline and escalation path.")
-                        st.write("3. Track any Day 1 payroll risks.")
+                        st.write("1. Contact the primary Japan payroll SME immediately.")
+                        st.write("2. Confirm payroll setup timeline and Day 1 continuity plan.")
+                        st.write("3. Track payroll readiness as a Critical Day 1 dependency.")
+                        st.subheader("Owners")
+                        st.write("HR Director Japan, Integration Lead")
+                        st.subheader("Risks")
+                        st.write("Delays in payroll setup can affect Day 1 readiness and employee experience.")
                         st.subheader("Next Steps")
                         st.write("Open the SME Directory tab and engage the Japan payroll SME immediately.")
                     elif "budget" in question_lower:
                         st.write(
-                            f"IBM Bob reviewed integration spend and found forecast spend of ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}, with estimated savings of ${estimated_savings:,.0f}."
+                            f"IBM Bob reviewed integration spend: forecast of ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}, with estimated savings of ${estimated_savings:,.0f}. Budget variance is {budget_variance_pct:+.1f}%."
                         )
                         st.subheader("Agent Capabilities Used")
                         st.write("- Budget & Value Tracking Agent")
                         st.subheader("Recommended Actions")
-                        st.write("1. Review current spend against plan.")
-                        st.write("2. Validate the forecast and savings assumptions.")
-                        st.write("3. Escalate any overspend risks.")
+                        st.write("1. Review current spend by category against plan.")
+                        st.write("2. Validate forecast assumptions and savings targets.")
+                        st.write("3. Escalate any overspend categories to the Integration Lead.")
+                        st.subheader("Owners")
+                        st.write(f"{integration_lead}, Finance")
+                        st.subheader("Risks")
+                        st.write("Forecast variance may indicate scope creep or unplanned integration costs.")
                         st.subheader("Next Steps")
-                        st.write("Open the Budget tab to review detailed budget and totals.")
-                    elif "coa" in question_lower or "account" in question_lower:
+                        st.write("Open the Budget tab to review detailed spend by category.")
+                    elif "coa" in question_lower or "account" in question_lower or "finance" in question_lower:
                         st.write(
-                            "IBM Bob identified finance mapping as the first priority and recommends validating chart of accounts alignment before Day 1 readiness review."
+                            "IBM Bob identified finance mapping as the first priority. Chart of accounts alignment must be completed before the first consolidated close."
                         )
                         st.subheader("Agent Capabilities Used")
                         st.write("- Finance & Account Mapping Agent")
                         st.write("- Integration Navigator Agent")
                         st.subheader("Recommended Actions")
                         st.write("1. Upload and validate chart of accounts files.")
-                        st.write("2. Map key accounts to the target structure.")
-                        st.write("3. Review unresolved mapping dependencies with Finance.")
+                        st.write("2. Map key accounts to the IBM target structure.")
+                        st.write("3. Identify unresolved mapping gaps and assign owners.")
+                        st.subheader("Owners")
+                        st.write(f"{integration_lead}, Finance, APAC Controller")
+                        st.subheader("Risks")
+                        st.write("Unresolved COA mapping blocks the first consolidated close and financial reporting.")
                         st.subheader("Next Steps")
-                        st.write("Coordinate with Finance to validate COA mapping and readiness blockers.")
+                        st.write("Coordinate with Finance SME to validate COA mapping and confirm close calendar alignment.")
+                    elif "tax" in question_lower:
+                        st.write(
+                            "IBM Bob identified tax registration gaps as a Critical Day 1 blocker. Incomplete tax registration prevents revenue recognition and increases compliance risk."
+                        )
+                        st.subheader("Agent Capabilities Used")
+                        st.write("- Risk & Controls Agent")
+                        st.write("- Integration Navigator Agent")
+                        st.subheader("Recommended Actions")
+                        st.write("1. Identify all entities with incomplete tax registration.")
+                        st.write("2. Engage Regional Tax Lead immediately to resolve gaps.")
+                        st.write("3. Do not recognize revenue in any entity with unresolved tax registration.")
+                        st.subheader("Owners")
+                        st.write("Regional Tax Lead, Legal, Integration Lead")
+                        st.subheader("Risks")
+                        st.write("Non-compliance with tax registration requirements may result in penalties and revenue recognition delays.")
+                        st.subheader("Next Steps")
+                        st.write("Open the Risks tab and review R006. Escalate to the Regional Tax Lead today.")
                     else:
                         st.write(
-                            f"IBM Bob reviewed the current workspace, readiness of {readiness_percent}%, {high_risks} high-risk items, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
+                            f"IBM Bob reviewed the current workspace: readiness at {readiness_percent}%, {critical_risks} critical and {high_risks} high-risk items open, forecast spend of ${forecast_spend:,.0f}, and legal entity savings opportunity of ${total_action_savings:,.0f}."
                         )
                         st.subheader("Agent Capabilities Used")
                         st.write("- Integration Navigator")
                         st.write("- Risk & Controls Agent")
                         st.write("- Budget & Value Tracking Agent")
                         st.write("- Legal Entity Optimization Agent")
+                        st.write("- SME Discovery Agent")
                         st.subheader("Recommended Actions")
-                        st.write("1. Validate uploaded acquisition data.")
-                        st.write("2. Review high-risk integration blockers.")
-                        st.write("3. Confirm account, workforce and legal entity mapping.")
-                        st.write("4. Assign SMEs and owners for all open actions.")
-                        st.write("5. Refresh dashboard before Day 1 readiness review.")
+                        st.write("1. Validate all uploaded acquisition data is complete and accurate.")
+                        st.write("2. Review and assign owners to all Critical and High risks immediately.")
+                        st.write("3. Confirm COA, workforce, and legal entity mapping is underway.")
+                        st.write("4. Assign SMEs to all open workstreams.")
+                        st.write("5. Schedule Day 1 readiness review 2 weeks before target date.")
+                        st.subheader("Owners")
+                        st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
+                        st.subheader("Timeline")
+                        st.write(f"Day 1 target: {day_1_date}  |  Day 100 target: {day_100_date}")
+                        st.subheader("Risks")
+                        st.write("Incomplete mappings, missing SMEs, and unresolved legal entity issues may delay readiness.")
                         st.subheader("Budget / Savings / Cash Impact")
-                        st.write(f"Estimated savings: ${estimated_savings:,.0f}")
-                        st.write(f"Legal entity action savings: ${total_action_savings:,.0f}")
-                        st.write(f"Total value opportunity: ${estimated_savings + total_action_savings:,.0f}")
+                        st.write(f"Forecast spend: ${forecast_spend:,.0f}  |  Estimated savings: ${estimated_savings:,.0f}")
+                        st.write(f"Legal entity action savings: ${total_action_savings:,.0f}  |  Total value opportunity: ${total_value_opportunity:,.0f}")
                         st.subheader("Next Steps")
-                        st.write(f"Integration lead {integration_lead} should review risks, legal entity candidates and readiness gaps.")
+                        st.write(f"{integration_lead} to review open risks, legal entity candidates, and readiness gaps before next checkpoint.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with right_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.subheader("Live Command Center Metrics")
-            st.info(f"{high_risks} high-risk items currently need executive attention.")
+            st.subheader("Live Command Center Alerts")
+            if critical_risks > 0:
+                st.error(f"{critical_risks} Critical risk(s) require immediate executive escalation.")
+            if high_risks > 0:
+                st.warning(f"{high_risks} High risk(s) need owner and mitigation plan within 48 hours.")
+            if at_risk_areas > 0:
+                st.warning(f"{at_risk_areas} workstream(s) are At Risk — review Integration Status tab.")
+            if not_started_areas > 0:
+                st.info(f"{not_started_areas} workstream(s) have not started — assign owners immediately.")
             st.info(f"Forecast spend is ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}.")
-            st.info(f"Estimated savings currently total ${estimated_savings:,.0f}.")
+            st.info(f"Estimated savings total ${estimated_savings:,.0f}.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
@@ -380,64 +515,122 @@ try:
         st.markdown("</div>", unsafe_allow_html=True)
 
         chart_col1, chart_col2 = st.columns(2)
-
         with chart_col1:
-            st.subheader("Budget Overview")
+            st.subheader("Budget Overview by Category")
             st.bar_chart(budget_chart_data)
-
         with chart_col2:
             st.subheader("Legal Entity Actions")
             st.bar_chart(legal_action_counts)
-
         st.subheader("Integration Status Overview")
         st.bar_chart(status_counts)
 
+    # ── INTEGRATION STATUS TAB ─────────────────────────────────────────────────
     with status_tab:
         render_tab_header(
             "Integration Status",
-            "Review current progress across tracked integration areas and identify which workstreams remain incomplete.",
+            "Review current progress across all tracked integration workstreams. Identify incomplete areas and assign owners to drive Day 1 and Day 100 readiness.",
         )
-        status_metric_col1, status_metric_col2, status_metric_col3 = st.columns(3)
+        status_metric_col1, status_metric_col2, status_metric_col3, status_metric_col4 = st.columns(4)
         status_metric_col1.metric("Tracked Areas", total_areas)
-        status_metric_col2.metric("Completed", completed_areas)
-        status_metric_col3.metric("Readiness", f"{readiness_percent}%")
+        status_metric_col2.metric("Completed", int(completed_areas))
+        status_metric_col3.metric("At Risk", int(at_risk_areas))
+        status_metric_col4.metric("Readiness Score", f"{readiness_percent}%")
+        st.progress(readiness_percent / 100)
+        st.markdown("---")
+        st.subheader("Workstream Status")
+        for _, row in integration_status.iterrows():
+            st.markdown(
+                f"<div class='risk-row'><b>{row['area']}</b> &nbsp; {status_badge(row['status'])} &nbsp;&nbsp; Owner: {row['owner']}</div>",
+                unsafe_allow_html=True,
+            )
+        st.markdown("---")
+        st.subheader("Full Data Table")
         st.dataframe(integration_status, use_container_width=True)
 
+    # ── RISKS TAB ──────────────────────────────────────────────────────────────
     with risks_tab:
         render_tab_header(
             "Risks",
-            "Monitor risk exposure and focus leadership attention on the most critical blockers to integration readiness.",
+            "Monitor all integration risks. Critical and High risks must have owners and mitigation plans. Escalate Critical risks to the executive sponsor immediately.",
         )
-        risk_metric_col1, risk_metric_col2 = st.columns(2)
+        risk_metric_col1, risk_metric_col2, risk_metric_col3, risk_metric_col4 = st.columns(4)
         risk_metric_col1.metric("Total Risks", len(risks))
-        risk_metric_col2.metric("High Risks", high_risks)
+        risk_metric_col2.metric("Critical", int(critical_risks))
+        risk_metric_col3.metric("High", int(high_risks))
+        risk_metric_col4.metric("Medium", int(medium_risks))
+        st.markdown("---")
+
+        if critical_risks > 0:
+            st.subheader("Critical Risks — Immediate Escalation Required")
+            for _, row in risks[risks["severity"] == "Critical"].iterrows():
+                mitigation = row.get("mitigation", "No mitigation plan assigned")
+                status_val = row.get("status", "Open")
+                st.markdown(
+                    f"<div class='risk-row'>{severity_badge(row['severity'])} &nbsp; <b>{row['risk_id']}</b>: {row['risk']}<br>"
+                    f"<small>Owner: {row['owner']} &nbsp;|&nbsp; Status: {status_val} &nbsp;|&nbsp; Mitigation: {mitigation}</small></div>",
+                    unsafe_allow_html=True,
+                )
+
+        st.subheader("High Risks")
+        for _, row in risks[risks["severity"] == "High"].iterrows():
+            mitigation = row.get("mitigation", "No mitigation plan assigned")
+            status_val = row.get("status", "Open")
+            st.markdown(
+                f"<div class='risk-row'>{severity_badge(row['severity'])} &nbsp; <b>{row['risk_id']}</b>: {row['risk']}<br>"
+                f"<small>Owner: {row['owner']} &nbsp;|&nbsp; Status: {status_val} &nbsp;|&nbsp; Mitigation: {mitigation}</small></div>",
+                unsafe_allow_html=True,
+            )
+
+        st.subheader("Medium Risks")
+        for _, row in risks[risks["severity"] == "Medium"].iterrows():
+            mitigation = row.get("mitigation", "No mitigation plan assigned")
+            status_val = row.get("status", "Open")
+            st.markdown(
+                f"<div class='risk-row'>{severity_badge(row['severity'])} &nbsp; <b>{row['risk_id']}</b>: {row['risk']}<br>"
+                f"<small>Owner: {row['owner']} &nbsp;|&nbsp; Status: {status_val} &nbsp;|&nbsp; Mitigation: {mitigation}</small></div>",
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("---")
+        st.subheader("Full Risk Register")
         st.dataframe(risks, use_container_width=True)
 
+    # ── BUDGET TAB ─────────────────────────────────────────────────────────────
     with budget_tab:
         render_tab_header(
             "Budget",
-            "Compare budget, current spend, forecast, and expected savings to understand overall integration cost performance.",
+            "Compare budget, actual spend, forecast, and expected savings across all integration categories. Identify variance and validate savings assumptions.",
         )
-        budget_metric_col1, budget_metric_col2, budget_metric_col3 = st.columns(3)
+        budget_metric_col1, budget_metric_col2, budget_metric_col3, budget_metric_col4 = st.columns(4)
         budget_metric_col1.metric("Total Budget", f"${total_budget:,.0f}")
-        budget_metric_col2.metric("Forecast Spend", f"${forecast_spend:,.0f}")
-        budget_metric_col3.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+        budget_metric_col2.metric("Actual Spend", f"${actual_spend:,.0f}")
+        budget_metric_col3.metric("Forecast Spend", f"${forecast_spend:,.0f}", delta=f"{budget_variance_pct:+.1f}% vs budget", delta_color="inverse")
+        budget_metric_col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
+        st.markdown("---")
+        st.subheader("Budget by Category")
+        st.bar_chart(budget_chart_data)
+        st.subheader("Detail")
         st.dataframe(budget, use_container_width=True)
         st.subheader("Totals")
         st.dataframe(budget_totals, use_container_width=True)
 
+    # ── LEGAL ENTITIES TAB ────────────────────────────────────────────────────
     with legal_tab:
         render_tab_header(
             "Legal Entities",
-            "Review legal entity actions, audit cost exposure, and expected savings from simplification decisions.",
+            "Review legal entity simplification recommendations. Retain regulatory-required entities, merge duplicates, and dissolve inactive entities to reduce admin cost and audit fees.",
         )
-        legal_metric_col1, legal_metric_col2, legal_metric_col3 = st.columns(3)
+        legal_metric_col1, legal_metric_col2, legal_metric_col3, legal_metric_col4 = st.columns(4)
         legal_metric_col1.metric("Entities Tracked", len(legal_entities))
         legal_metric_col2.metric("Merge/Dissolve Candidates", len(merge_or_dissolve_entities))
         legal_metric_col3.metric("Action Savings", f"${total_action_savings:,.0f}")
+        legal_metric_col4.metric("Admin Cost Reduction", f"${annual_admin_cost_reduction:,.0f}")
+        st.markdown("---")
+        st.subheader("Entity Recommendations")
         st.dataframe(
             legal_entities[[
                 "entity_name",
+                "country",
                 "recommended_action",
                 "recommendation_reason",
                 "confidence_level",
@@ -454,35 +647,58 @@ try:
         st.subheader("Totals")
         st.dataframe(legal_entity_totals, use_container_width=True)
 
+    # ── SME DIRECTORY TAB ─────────────────────────────────────────────────────
     with sme_tab:
         render_tab_header(
             "SME Directory",
-            "Use the SME directory to identify functional owners, backups, and escalation contacts for key integration questions.",
+            "Identify the right functional owner for every integration question. Use the primary SME first, then the backup, then the escalation path if needed.",
         )
-        sme_metric_col1, sme_metric_col2 = st.columns(2)
+        sme_metric_col1, sme_metric_col2, sme_metric_col3 = st.columns(3)
         sme_metric_col1.metric("SME Records", len(sme_directory))
-        sme_metric_col2.metric("Region Focus", region)
-        st.dataframe(sme_directory, use_container_width=True)
+        sme_metric_col2.metric("Functions Covered", sme_directory["function"].nunique())
+        sme_metric_col3.metric("Geographies Covered", sme_directory["geography"].nunique())
+        st.markdown("---")
+        search_function = st.text_input("Search by function or geography", "")
+        if search_function:
+            filtered_sme = sme_directory[
+                sme_directory["function"].str.contains(search_function, case=False, na=False) |
+                sme_directory["geography"].str.contains(search_function, case=False, na=False)
+            ]
+            st.dataframe(filtered_sme, use_container_width=True)
+        else:
+            st.dataframe(sme_directory, use_container_width=True)
 
+    # ── KNOWLEDGE LIBRARY TAB ─────────────────────────────────────────────────
     with knowledge_tab:
         render_tab_header(
             "Knowledge Library",
-            "Reference approved knowledge, lessons learned, and reusable guidance to accelerate future acquisition decisions.",
+            "Reference approved knowledge, lessons learned, and reusable guidance to accelerate acquisition decisions and avoid repeating past mistakes.",
         )
-        st.text_area("Approved knowledge and lessons learned", knowledge_library_text, height=250)
+        sections = knowledge_library_text.split("===")
+        if len(sections) > 1:
+            for section in sections:
+                section = section.strip()
+                if not section:
+                    continue
+                lines = section.split("\n", 1)
+                if len(lines) == 2:
+                    title_text = lines[0].strip()
+                    body_text = lines[1].strip()
+                    if title_text:
+                        with st.expander(title_text, expanded=False):
+                            st.write(body_text)
+        else:
+            st.text_area("Approved knowledge and lessons learned", knowledge_library_text, height=400)
 
+    # ── IBM BOB Q&A TAB ───────────────────────────────────────────────────────
     with bob_tab:
         render_tab_header(
             "IBM Bob Q&A",
-            "Use structured IBM Bob responses to guide actions, identify owners, and accelerate acquisition decision-making.",
+            "Use structured IBM Bob responses to guide integration actions, identify owners, and accelerate acquisition decision-making from Day 1 to Day 100.",
         )
-        st.write("Ask IBM Bob anything about this acquisition integration. Example")
-        st.code(
-            "We acquired a company with different COA, 12 legal entities, 500 employees and incomplete tax registration. What should we do first?",
-            language="text",
-        )
+        st.write("Select a sample question or type your own below.")
         question = st.selectbox(
-            "Select a sample question",
+            "Sample questions",
             [
                 "What should we do first after acquiring Company X?",
                 "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?",
@@ -494,7 +710,7 @@ try:
         if question == "What should we do first after acquiring Company X?":
             st.subheader("Executive Summary")
             st.write(
-                f"Start by creating the {workspace_name} workspace for {region}, uploading core data, and addressing the {high_risks} current high-risk items while improving readiness from {readiness_percent}%."
+                f"Start by creating the {workspace_name} workspace for {region}, uploading core data, and addressing the {critical_risks} critical and {high_risks} high-risk items. Current readiness is {readiness_percent}% — Day 1 target is {day_1_date}."
             )
             st.subheader("Agent Capabilities Used")
             st.write("- Integration Navigator")
@@ -504,26 +720,26 @@ try:
             st.subheader("Recommended Actions")
             st.write(f"1. Create the {workspace_name} workspace and confirm Day 1 / Day 100 targets.")
             st.write("2. Upload chart of accounts, headcount, legal entity, risk, and budget files.")
-            st.write(f"3. Review the {high_risks} high-risk items and assign owners for open actions.")
+            st.write(f"3. Assign owners to all {critical_risks} critical and {high_risks} high-risk items.")
+            st.write("4. Confirm payroll continuity and systems access provisioning timelines.")
+            st.write("5. Schedule Day 1 readiness review 2 weeks before target date.")
             st.subheader("Owners")
             st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
-            st.write(f"Immediate start in Week 1, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
+            st.write(f"Immediate start in Week 1. Day 1 target: {day_1_date}. Day 100 target: {day_100_date}.")
             st.subheader("Risks")
             st.write("Incomplete mappings, missing SMEs, and unresolved legal entity issues may delay readiness.")
             st.subheader("Budget / Savings / Cash Impact")
-            st.write(f"Forecast spend: ${forecast_spend:,.0f}")
-            st.write(f"Estimated savings: ${estimated_savings:,.0f}")
-            st.write(f"Cash release opportunity: ${cash_release_opportunity:,.0f}")
+            st.write(f"Forecast spend: ${forecast_spend:,.0f}  |  Estimated savings: ${estimated_savings:,.0f}  |  Cash release opportunity: ${cash_release_opportunity:,.0f}")
             st.subheader("Readiness Impact")
-            st.write(f"Current readiness is {readiness_percent}% with {high_risks} high-risk items requiring action.")
+            st.write(f"Current readiness is {readiness_percent}% with {critical_risks} critical and {high_risks} high-risk items requiring immediate action.")
             st.subheader("Next Steps")
-            st.write(f"Refresh the dashboard after each upload and route open issues to {integration_lead} and the correct functional owners.")
+            st.write(f"{integration_lead} to review all open risks and readiness gaps before next checkpoint.")
 
         elif question == "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?":
             st.subheader("Executive Summary")
             st.write(
-                f"Start by launching the {workspace_name} workspace for {region}, validating chart of accounts mapping, reviewing the 12 legal entities for simplification, and aligning the 500-employee workforce structure to target Day 1 and Day 100 milestones."
+                f"Start by launching the {workspace_name} workspace for {region}. Validate chart of accounts mapping, review {len(legal_entities)} legal entities for simplification, and align the 500-employee workforce structure to target Day 1 ({day_1_date}) and Day 100 ({day_100_date})."
             )
             st.subheader("Agent Capabilities Used")
             st.write("- Integration Navigator")
@@ -532,40 +748,41 @@ try:
             st.write("- Legal Entity Optimization")
             st.subheader("Recommended Actions")
             st.write("1. Upload COA, legal entity, workforce, risk, and budget files.")
-            st.write("2. Review finance mapping gaps and workforce alignment dependencies.")
-            st.write("3. Identify legal entities that may be retained, merged, or dissolved.")
-            st.write(f"4. Assign {integration_lead} and functional owners to the highest-priority actions.")
+            st.write("2. Review finance mapping gaps and assign APAC Controller as Finance SME.")
+            st.write(f"3. Review {len(merge_or_dissolve_entities)} legal entities flagged for merge or dissolve — estimated savings ${total_action_savings:,.0f}.")
+            st.write("4. Confirm workforce reporting lines and identify role changes before Day 100.")
+            st.write(f"5. Assign {integration_lead} and functional owners to the highest-priority actions.")
             st.subheader("Owners")
             st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
             st.subheader("Timeline")
-            st.write(f"Immediate mobilization, targeting Day 1 on {day_1_date} and Day 100 on {day_100_date}.")
+            st.write(f"Immediate mobilization. Day 1: {day_1_date}. Day 100: {day_100_date}.")
             st.subheader("Risks")
             st.write("COA misalignment, unresolved entity structure, and workforce mapping issues may delay readiness.")
             st.subheader("Budget / Savings / Cash Impact")
-            st.write(f"Forecast spend: ${forecast_spend:,.0f}")
-            st.write(f"Estimated savings: ${estimated_savings:,.0f}")
-            st.write(f"Total value opportunity: ${total_value_opportunity:,.0f}")
+            st.write(f"Forecast spend: ${forecast_spend:,.0f}  |  Estimated savings: ${estimated_savings:,.0f}  |  Total value opportunity: ${total_value_opportunity:,.0f}")
             st.subheader("Readiness Impact")
-            st.write(f"Readiness depends on finance mapping, workforce alignment, and legal entity simplification progress ahead of Day 1.")
+            st.write("Finance mapping, workforce alignment, and legal entity simplification are the three critical readiness drivers for Day 100.")
             st.subheader("Next Steps")
-            st.write("Complete data uploads, confirm SME coverage, and refresh the dashboard to validate integration readiness.")
+            st.write("Complete data uploads, confirm SME coverage for all functions, and refresh the dashboard to validate integration readiness.")
 
         elif question == "Which legal entities can be merged or dissolved and what is the cash impact?":
             st.subheader("Executive Summary")
             st.write(
-                f"There are {len(merge_or_dissolve_entities)} legal entities currently flagged for merge or dissolve, with an estimated annual admin cost impact of ${annual_admin_cost_reduction:,.0f} and total action savings of ${total_action_savings:,.0f}."
+                f"IBM Bob identified {len(merge_or_dissolve_entities)} of {len(legal_entities)} legal entities as candidates for merge or dissolve. Estimated annual admin cost reduction: ${annual_admin_cost_reduction:,.0f}. Total action savings: ${total_action_savings:,.0f}."
             )
             st.subheader("Agent Capabilities Used")
             st.write("- Legal Entity Optimization")
             st.write("- Budget & Value Tracking")
-            st.subheader("Recommended Actions")
-            st.write("Review the recommended_action column in the Legal Entities tab.")
+            st.subheader("Merge / Dissolve Candidates")
             st.dataframe(
                 merge_or_dissolve_entities[[
                     "entity_name",
+                    "country",
+                    "recommended_action",
+                    "confidence_level",
+                    "required_approval",
                     "external_auditors",
                     "annual_audit_fees",
-                    "recommended_action",
                     "annual_admin_cost",
                     "saving_if_action_is_taken",
                 ]],
@@ -574,44 +791,49 @@ try:
             st.subheader("Owners")
             st.write("Legal, Tax, Treasury, Integration Lead")
             st.subheader("Timeline")
-            st.write("Assess in the current integration planning cycle")
+            st.write("Assess in the current integration planning cycle. Target completion by Day 100.")
             st.subheader("Risks")
             st.write("Active contracts, regulatory requirements, and incomplete information may block action.")
             st.subheader("Budget / Savings / Cash Impact")
-            st.write(f"Annual admin cost impact: ${annual_admin_cost_reduction:,.0f}")
-            st.write(f"Action savings: ${total_action_savings:,.0f}")
+            st.write(f"Annual admin cost reduction: ${annual_admin_cost_reduction:,.0f}")
+            st.write(f"Total action savings: ${total_action_savings:,.0f}")
             st.write(f"Cash release opportunity: ${cash_release_opportunity:,.0f}")
             st.subheader("Readiness Impact")
-            st.write("Entity simplification can reduce operational complexity and improve Day 100 stabilization.")
+            st.write("Entity simplification reduces operational complexity and improves Day 100 stabilization.")
             st.subheader("Next Steps")
-            st.write("Validate candidates and confirm whether the estimated admin cost reduction can be realized.")
+            st.write("Validate candidates with Legal and Tax. Confirm whether estimated admin cost reductions can be realized before initiating any action.")
 
         elif question == "Who can help with payroll integration in Japan?":
             st.subheader("Executive Summary")
             if not japan_payroll_sme.empty:
                 payroll_row = japan_payroll_sme.iloc[0]
                 st.write(
-                    f"The primary payroll SME for Japan is {payroll_row['primary_sme']}, with backup support from {payroll_row['backup_sme']}."
+                    f"The primary payroll SME for Japan is {payroll_row['primary_sme']}, with backup support from {payroll_row['backup_sme']}. Escalation path: {payroll_row['escalation_path']}."
                 )
                 st.subheader("Agent Capabilities Used")
                 st.write("- SME Discovery")
                 st.write("- Workforce & Organization Mapping")
+                st.subheader("SME Contact Details")
+                st.dataframe(japan_payroll_sme, use_container_width=True)
                 st.subheader("Recommended Actions")
-                st.write("Engage the primary SME first, then use the backup SME or escalation path if needed.")
+                st.write("1. Contact the primary SME to confirm payroll setup timeline.")
+                st.write("2. Use the backup SME if the primary is unavailable.")
+                st.write("3. Escalate via the escalation path if payroll continuity is at risk.")
                 st.subheader("Owners")
-                st.write("HR, Payroll, Regional HR Leadership")
+                st.write("HR Director Japan, Integration Lead")
                 st.subheader("Timeline")
-                st.write("Immediate")
+                st.write("Immediate — payroll continuity is a non-negotiable Day 1 requirement.")
                 st.subheader("Risks")
-                st.write("Delays in payroll setup can affect Day 1 readiness and employee experience.")
+                st.write("Delays in payroll setup can affect Day 1 readiness and employee confidence.")
                 st.subheader("Budget / Savings / Cash Impact")
-                st.write("Payroll delays may increase transition costs and readiness risk if unresolved.")
+                st.write("Payroll delays may increase transition costs and readiness risk if unresolved before Day 1.")
                 st.subheader("Readiness Impact")
-                st.write("Payroll SME alignment supports workforce readiness and Day 1 employee continuity.")
+                st.write("Payroll SME alignment is a critical dependency for Day 1 employee continuity.")
                 st.subheader("Next Steps")
-                st.write(f"Contact {payroll_row['primary_sme']} and escalate via {payroll_row['escalation_path']} if required.")
+                st.write(f"Contact {payroll_row['primary_sme']} today. Escalate via {payroll_row['escalation_path']} if not resolved within 24 hours.")
             else:
-                st.write("No Japan payroll SME was found in the SME Directory.")
+                st.warning("No Japan payroll SME was found in the SME Directory. Please upload an updated SME directory or assign a payroll SME for Japan immediately.")
 
 except Exception as e:
-    st.error(f"Could not load sample data: {e}")
+    st.error(f"Could not load data: {e}")
+    st.info("Please check that all sample data files are present in the sample_data/ folder, or upload replacement files using the sidebar.")

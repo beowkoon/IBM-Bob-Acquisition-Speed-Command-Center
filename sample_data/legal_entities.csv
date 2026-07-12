@@ -1,5 +1,13 @@
-entity_name,country,employees,annual_revenue,duplicate_ibm_presence,regulatory_required,active_contracts,annual_admin_cost
-Company X Malaysia Sdn Bhd,Malaysia,50,2000000,Yes,No,Yes,30000
-Company X Japan KK,Japan,120,5000000,No,Yes,Yes,50000
-Company X Singapore Pte Ltd,Singapore,0,0,Yes,No,No,15000
-Company X UK Ltd,United Kingdom,10,300000,Yes,No,No,20000
+entity_name,country,employees,annual_revenue,duplicate_ibm_presence,regulatory_required,active_contracts,annual_admin_cost,external_auditors,annual_audit_fees,saving_if_action_is_taken
+Company X Malaysia Sdn Bhd,Malaysia,50,2000000,Yes,No,Yes,30000,KPMG,18000,48000
+Company X Japan KK,Japan,120,5000000,No,Yes,Yes,50000,Deloitte,25000,0
+Company X Singapore Pte Ltd,Singapore,0,0,Yes,No,No,15000,EY,12000,27000
+Company X UK Ltd,United Kingdom,10,300000,Yes,No,No,20000,PwC,15000,35000
+Company X Australia Pty Ltd,Australia,0,0,No,No,No,12000,BDO,8000,20000
+Company X India Pvt Ltd,India,35,800000,Yes,No,Yes,22000,Grant Thornton,10000,32000
+Company X Germany GmbH,Germany,5,150000,Yes,No,No,18000,KPMG,14000,32000
+Company X USA Inc,United States,80,6000000,No,Yes,Yes,60000,Deloitte,30000,0
+Company X Hong Kong Ltd,Hong Kong,0,0,Yes,No,No,10000,EY,8000,18000
+Company X Canada Inc,Canada,8,250000,Yes,No,No,16000,PwC,12000,28000
+Company X France SAS,France,3,90000,Yes,No,No,14000,Mazars,10000,24000
+Company X China WFOE,China,15,400000,No,Yes,Yes,35000,Deloitte,20000,0

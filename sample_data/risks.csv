@@ -1,5 +1,11 @@
-risk_id,risk,severity,owner
-R001,Chart of accounts mapping incomplete,High,June
-R002,Payroll integration SME not assigned,Medium,John Lee
-R003,Legal entity review pending,High,David Lim
-R004,Budget variance exceeds target,Medium,Kevin Wong
+risk_id,risk,severity,owner,status,mitigation
+R001,Chart of accounts mapping incomplete,High,Alice Tan,Open,Engage Finance SME to complete mapping by Day 1
+R002,Payroll integration SME not assigned,High,John Lee,In Progress,Assign Yuki Sato as primary payroll SME for Japan
+R003,Legal entity review pending,High,David Lim,In Progress,Schedule legal entity review session with Legal and Tax
+R004,Budget variance exceeds target,Medium,Kevin Wong,Open,Review forecast assumptions and adjust spending plan
+R005,HR data migration not started,High,John Lee,Open,Initiate HR data mapping and migration plan immediately
+R006,Tax registration incomplete in Malaysia,Critical,Nur Aisyah,Open,Engage Regional Tax Lead to complete registration before Day 1
+R007,Systems access provisioning delayed,High,Sarah Chen,In Progress,Coordinate with IT to accelerate access provisioning
+R008,Vendor contracts not reviewed,Medium,David Lim,Open,Legal to review all active vendor contracts for assignment
+R009,Finance reporting timeline at risk,Medium,Alice Tan,In Progress,Confirm close calendar alignment with Finance leadership
+R010,Workforce alignment plan not finalised,Medium,John Lee,Open,Complete org design and confirm reporting lines before Day 100

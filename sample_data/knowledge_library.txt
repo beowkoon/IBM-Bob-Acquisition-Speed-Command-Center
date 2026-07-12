@@ -1,4 +1,48 @@
+IBM Bob Acquisition Speed Command Center — Knowledge Library
+
+=== DAY 1 READINESS ===
 Day 1 readiness requires completion of critical accounting, finance, payroll, legal, and access control activities.
-Use prior acquisition playbooks to identify standard mapping, governance, and SME routing steps.
+All employees must have systems access confirmed before Day 1.
+Payroll continuity is a non-negotiable Day 1 requirement — any gap must be escalated immediately.
+Legal entity structure must be confirmed and communicated to all functional leads before Day 1.
+A Day 1 readiness review meeting should be held 2 weeks before the target date with all workstream owners.
+
+=== LEGAL ENTITY SIMPLIFICATION ===
 Legal entity simplification should be reviewed jointly by Legal, Tax, Treasury, and business leadership.
-Dashboard metrics should be refreshed after each major data upload.
+Entities with no employees, no revenue, and no active contracts are strong dissolution candidates.
+Entities with duplicate IBM presence and no regulatory requirement are strong merger candidates.
+Regulatory-required entities must be retained regardless of size or activity.
+All simplification decisions require Legal sign-off at minimum; dissolution and merger require Tax and Treasury.
+Target entity simplification completion by Day 100 to reduce ongoing admin and audit costs.
+
+=== FINANCE AND ACCOUNTING ===
+Chart of accounts mapping must be completed before the first consolidated close.
+Use prior acquisition playbooks to identify standard mapping, governance, and SME routing steps.
+Finance mapping should identify all cost centers, profit centers, and intercompany relationships.
+Tax registration gaps must be resolved before any revenue is recognized in the acquired entity.
+Budget variances exceeding 10% of plan should be escalated to the Integration Lead immediately.
+
+=== WORKFORCE AND HR ===
+Workforce alignment should confirm all reporting lines, role changes, and affected employees before Day 100.
+HR data migration must include headcount, compensation, benefits, and employment contract details.
+All employees should receive integration communications within the first week after close.
+Change management planning should begin at close and run through to Day 100 stabilization.
+
+=== RISK AND CONTROLS ===
+All Critical and High risks must have an assigned owner and mitigation plan within 48 hours of identification.
+Risk register should be reviewed weekly by the Integration Lead and updated after each major milestone.
+Unmitigated risks linked to Day 1 activities should be escalated to the executive sponsor immediately.
+Controls should be assessed for all acquired entities to identify gaps versus IBM standards.
+
+=== SME ROUTING ===
+Use the SME Directory to identify the correct functional owner for each integration question.
+If the primary SME is unavailable, engage the backup SME before escalating to the escalation path.
+SME coverage gaps should be flagged to the Integration Lead for reassignment within 24 hours.
+Regional SMEs should be engaged for all country-specific tax, legal, and payroll questions.
+
+=== LESSONS LEARNED ===
+Early engagement of Tax and Legal avoids last-minute blockers to Day 1 readiness.
+Incomplete data uploads are the most common cause of dashboard metric inaccuracies — validate all files at upload.
+Legal entity simplification decisions made early in the integration cycle yield the highest cash release benefit.
+Dashboard metrics should be refreshed after each major data upload or workstream status change.
+Dedicated integration leads for each functional workstream significantly accelerate Day 100 outcomes.

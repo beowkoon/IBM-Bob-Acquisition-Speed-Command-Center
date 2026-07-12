@@ -1,8 +1,13 @@
 area,status,owner
-Accounting,In Progress,Jane
+Accounting,In Progress,Alice Tan
 Finance,In Progress,Alice Tan
 HR,Not Started,John Lee
 Tax,In Progress,Maria Ong
 Legal,Complete,David Lim
 Systems,Not Started,Sarah Chen
 Controls,In Progress,Kevin Wong
+Payroll,At Risk,John Lee
+Compliance,Not Started,Maria Ong
+Vendor Management,In Progress,David Lim
+Workforce Alignment,Not Started,John Lee
+IT Infrastructure,At Risk,Sarah Chen

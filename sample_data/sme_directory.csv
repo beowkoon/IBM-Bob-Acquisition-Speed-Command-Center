@@ -1,5 +1,13 @@
 function,geography,primary_sme,backup_sme,escalation_path
 Payroll,Japan,Yuki Sato,Ken Watanabe,HR Director Japan
-Tax,Malaysia,Nur Aisyah,Farid Rahman,Regional Tax Lead
+Tax,Malaysia,Nur Aisyah,Farid Rahman,Regional Tax Lead APAC
 Finance Mapping,Singapore,Mei Lin,Daniel Goh,APAC Controller
-Legal,United Kingdom,Emma Clarke,James Hill,Associate General Counsel
+Legal,United Kingdom,Emma Clarke,James Hill,Associate General Counsel EMEA
+HR Integration,India,Priya Sharma,Rajesh Nair,HR Director APAC
+Systems & IT,Australia,Chris Wong,Lena Park,CIO Office
+Compliance,Germany,Hans Mueller,Anna Becker,Chief Compliance Officer Europe
+Accounting,United States,Michael Brown,Sandra Lee,CFO Office Americas
+Vendor Management,Hong Kong,Jackie Chan,Amy Leung,Procurement Lead APAC
+Change Management,Canada,Sophie Tremblay,Marc Bouchard,Integration Lead
+Treasury,France,Pierre Dubois,Claire Martin,Group Treasurer EMEA
+Tax,China,Li Wei,Zhang Ming,Regional Tax Lead Greater China

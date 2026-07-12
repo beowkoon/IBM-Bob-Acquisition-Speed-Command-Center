@@ -47,6 +47,43 @@ Users create a new acquisition workspace, upload acquisition data and knowledge 
 - [Project Plan Write-Up](docs/IBM_Bob_Acquisition_Speed_Command_Center_Project_Plan%20Write%20Up.docx)
 - ![Flowchart](docs/IBM_Bob_Acquisition_Speed_Command_Center_Flowchart.png)
 
+## Prototype Setup
+### Prerequisites
+- Python 3
+
+### Install dependencies
+```powershell
+python -m pip install streamlit pandas
+```
+
+### Run the app
+```powershell
+python -m streamlit run app.py
+```
+
+### Sample data
+The prototype uses default files from [`sample_data/`](sample_data/):
+- [`sample_data/integration_status.csv`](sample_data/integration_status.csv)
+- [`sample_data/risks.csv`](sample_data/risks.csv)
+- [`sample_data/budget.csv`](sample_data/budget.csv)
+- [`sample_data/legal_entities.csv`](sample_data/legal_entities.csv)
+- [`sample_data/sme_directory.csv`](sample_data/sme_directory.csv)
+- [`sample_data/knowledge_library.txt`](sample_data/knowledge_library.txt)
+
+### Uploads
+The app sidebar includes a Data Upload Center. If you upload replacement files, the app uses them instead of the default files in [`sample_data/`](sample_data/).
+
+## Demo Script
+1. Run the prototype with [`python -m streamlit run app.py`](python:1).
+2. Open the **Dashboard** tab and explain the readiness, risk, spend, and savings metrics.
+3. Review the **Current Workspace Summary** to highlight tracked areas and legal entity opportunity.
+4. Open the **Integration Status**, **Risks**, and **Budget** tabs to show the underlying source data.
+5. Open the **Legal Entities** tab and explain the [`recommended_action`](app.py:45) column.
+6. Open the **SME Directory** tab and highlight the Japan payroll SME example.
+7. Open the **Knowledge Library** tab and explain how approved content can be reused.
+8. Open the **IBM Bob Q&A** tab and walk through the sample questions.
+9. Close with the business value: faster integration decisions, clearer ownership, faster SME routing, better risk visibility, and simplification opportunity.
+
 ## Success Measures
 - 40-60% faster integration planning and mobilization
 - 50-70% reduction in SME search time
@@ -55,7 +92,7 @@ Users create a new acquisition workspace, upload acquisition data and knowledge 
 - Better visibility into risks, budget, savings, cash impact, and entity simplification
 
 ## Next Steps
-- Build the prototype interface
-- Add sample upload templates and source files
-- Implement dashboard calculations and routing logic
+- Expand the prototype workflow and dashboard experience
+- Add more advanced recommendation logic and insights
 - Integrate the project write-up into working application components
+- Prepare the prototype for demo and challenge submission
