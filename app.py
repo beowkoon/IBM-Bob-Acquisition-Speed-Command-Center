@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from datetime import date, timedelta
 
 st.set_page_config(page_title="IBM Bob Acquisition Speed Command Center", layout="wide")
 
@@ -109,9 +110,9 @@ integration_lead = st.text_input("Integration Lead", value="BEOW KOON HENG")
 region = st.selectbox("Region", ["APAC", "Americas", "EMEA", "Japan"])
 date_col1, date_col2 = st.columns(2)
 with date_col1:
-    day_1_date = st.date_input("Day 1 Target Date")
+    day_1_date = st.date_input("Day 1 Target Date", value=date.today())
 with date_col2:
-    day_100_date = st.date_input("Day 100 Target Date")
+    day_100_date = st.date_input("Day 100 Target Date", value=day_1_date + timedelta(days=100))
 st.subheader(f"Prototype Dashboard - {workspace_name}")
 st.write("Bob is the single front door for acquisition integration — combining uploaded data, IBM knowledge, live metrics and agentic guidance to accelerate Day 1 to Day 100 execution.")
 
