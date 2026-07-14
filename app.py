@@ -379,11 +379,11 @@ try:
                 lbl_color = {"Complete":"#42be65","In Progress":"#00b0ff","At Risk":"#fa4d56","Not Started":"#888"}.get(s,"#aaa")
                 st.markdown(
                     f"""<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                        <div style="width:130px;font-size:13px;color:#e0e0e0;">{step}</div>
-                        <div style="flex:1;background:#2a2a3a;border-radius:4px;height:14px;">
+                        <div style="width:130px;font-size:13px;color:#1f2328;font-weight:500;">{step}</div>
+                        <div style="flex:1;background:#e5e7eb;border-radius:4px;height:14px;">
                             <div style="width:{bw}%;background:{bc};height:14px;border-radius:4px;"></div>
                         </div>
-                        <div style="width:90px;text-align:right;font-size:12px;font-weight:600;color:{lbl_color};">{s}</div>
+                        <div style="width:90px;text-align:right;font-size:12px;font-weight:600;color:{bc};">{s}</div>
                     </div>""",
                     unsafe_allow_html=True,
                 )
