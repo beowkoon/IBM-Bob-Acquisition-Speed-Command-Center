@@ -792,22 +792,74 @@ try:
     with sme_tab:
         render_tab_header(
             "SME Directory",
-            "Identify the right functional owner for every integration question. Use the primary SME first, then the backup, then the escalation path if needed.",
+            "Identify the right functional owner for every integration question. Search by function, geography, job profile, or skills to find the best-matched SME.",
         )
         sme_metric_col1, sme_metric_col2, sme_metric_col3 = st.columns(3)
         sme_metric_col1.metric("SME Records", len(sme_directory))
         sme_metric_col2.metric("Functions Covered", sme_directory["function"].nunique())
         sme_metric_col3.metric("Geographies Covered", sme_directory["geography"].nunique())
         st.markdown("---")
-        search_function = st.text_input("Search by function or geography", "")
-        if search_function:
-            filtered_sme = sme_directory[
-                sme_directory["function"].str.contains(search_function, case=False, na=False) |
-                sme_directory["geography"].str.contains(search_function, case=False, na=False)
-            ]
-            st.dataframe(filtered_sme, use_container_width=True)
+
+        st.subheader("Find the Right SME")
+        search_col1, search_col2 = st.columns(2)
+        with search_col1:
+            search_keyword = st.text_input("Search by function, geography, job profile or skill", "", placeholder="e.g. SAP, IFRS, chart of accounts, Singapore, Controller")
+        with search_col2:
+            function_filter = st.selectbox("Filter by function", ["All"] + sorted(sme_directory["function"].dropna().unique().tolist()))
+
+        has_skills = "skills" in sme_directory.columns
+        has_job_profile = "job_profile" in sme_directory.columns
+
+        if search_keyword or function_filter != "All":
+            mask = pd.Series([True] * len(sme_directory))
+            if function_filter != "All":
+                mask = mask & (sme_directory["function"] == function_filter)
+            if search_keyword:
+                keyword_mask = (
+                    sme_directory["function"].str.contains(search_keyword, case=False, na=False) |
+                    sme_directory["geography"].str.contains(search_keyword, case=False, na=False) |
+                    sme_directory["primary_sme"].str.contains(search_keyword, case=False, na=False)
+                )
+                if has_job_profile:
+                    keyword_mask = keyword_mask | sme_directory["job_profile"].str.contains(search_keyword, case=False, na=False)
+                if has_skills:
+                    keyword_mask = keyword_mask | sme_directory["skills"].str.contains(search_keyword, case=False, na=False)
+                mask = mask & keyword_mask
+            filtered_sme = sme_directory[mask]
+            st.caption(f"{len(filtered_sme)} SME(s) matched")
+            if filtered_sme.empty:
+                st.warning("No SMEs matched your search. Try a different keyword or clear the filter.")
+            else:
+                for _, row in filtered_sme.iterrows():
+                    job = row.get("job_profile", "") if has_job_profile else ""
+                    skills_val = row.get("skills", "") if has_skills else ""
+                    st.markdown(
+                        f"<div class='risk-row'>"
+                        f"<b>{row['primary_sme']}</b> &nbsp;|&nbsp; {row['function']} &nbsp;|&nbsp; {row['geography']}<br>"
+                        f"<small><b>Job Profile:</b> {job}</small><br>"
+                        f"<small><b>Skills:</b> {skills_val}</small><br>"
+                        f"<small>Backup: {row['backup_sme']} &nbsp;|&nbsp; Escalation: {row['escalation_path']}</small>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
         else:
-            st.dataframe(sme_directory, use_container_width=True)
+            st.markdown("---")
+            st.subheader("All SMEs")
+            for _, row in sme_directory.iterrows():
+                job = row.get("job_profile", "") if has_job_profile else ""
+                skills_val = row.get("skills", "") if has_skills else ""
+                st.markdown(
+                    f"<div class='risk-row'>"
+                    f"<b>{row['primary_sme']}</b> &nbsp;|&nbsp; {row['function']} &nbsp;|&nbsp; {row['geography']}<br>"
+                    f"<small><b>Job Profile:</b> {job}</small><br>"
+                    f"<small><b>Skills:</b> {skills_val}</small><br>"
+                    f"<small>Backup: {row['backup_sme']} &nbsp;|&nbsp; Escalation: {row['escalation_path']}</small>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+        st.markdown("---")
+        st.subheader("Full SME Table")
+        st.dataframe(sme_directory, use_container_width=True)
 
     # ── KNOWLEDGE LIBRARY TAB ─────────────────────────────────────────────────
     with knowledge_tab:

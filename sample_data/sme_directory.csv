@@ -1,13 +1,15 @@
-function,geography,primary_sme,backup_sme,escalation_path
-Payroll,Japan,Yuki Sato,Ken Watanabe,HR Director Japan
-Tax,Malaysia,Nur Aisyah,Farid Rahman,Regional Tax Lead APAC
-Finance Mapping,Singapore,Mei Lin,Daniel Goh,APAC Controller
-Legal,United Kingdom,Emma Clarke,James Hill,Associate General Counsel EMEA
-HR Integration,India,Priya Sharma,Rajesh Nair,HR Director APAC
-Systems & IT,Australia,Chris Wong,Lena Park,CIO Office
-Compliance,Germany,Hans Mueller,Anna Becker,Chief Compliance Officer Europe
-Accounting,United States,Michael Brown,Sandra Lee,CFO Office Americas
-Vendor Management,Hong Kong,Jackie Chan,Amy Leung,Procurement Lead APAC
-Change Management,Canada,Sophie Tremblay,Marc Bouchard,Integration Lead
-Treasury,France,Pierre Dubois,Claire Martin,Group Treasurer EMEA
-Tax,China,Li Wei,Zhang Ming,Regional Tax Lead Greater China
+function,geography,primary_sme,backup_sme,escalation_path,job_profile,skills
+Payroll,Japan,Yuki Sato,Ken Watanabe,HR Director Japan,Payroll Manager,"Payroll processing, HRIS systems, Japan labour law, payroll tax, employee benefits"
+Tax,Malaysia,Nur Aisyah,Farid Rahman,Regional Tax Lead APAC,Senior Tax Manager,"Corporate tax, GST/SST, transfer pricing, tax registration, Malaysia tax law"
+Finance Mapping,Singapore,Mei Lin,Daniel Goh,APAC Controller,Finance Integration Lead,"Chart of accounts mapping, ERP migration, intercompany reconciliation, SAP/Oracle, APAC GAAP"
+Legal,United Kingdom,Emma Clarke,James Hill,Associate General Counsel EMEA,Corporate Counsel,"Entity restructuring, contract assignment, M&A legal, UK company law, regulatory compliance"
+HR Integration,India,Priya Sharma,Rajesh Nair,HR Director APAC,HR Transformation Manager,"HR data migration, org design, workforce alignment, change management, India labour law"
+Systems & IT,Australia,Chris Wong,Lena Park,CIO Office,IT Integration Architect,"ERP integration, systems cutover, data migration, IT infrastructure, cloud migration"
+Compliance,Germany,Hans Mueller,Anna Becker,Chief Compliance Officer Europe,Compliance Director,"Regulatory compliance, internal controls, GDPR, audit management, risk framework"
+Accounting,United States,Michael Brown,Sandra Lee,CFO Office Americas,Controller,"US GAAP, financial close, consolidation, intercompany accounting, cost centre mapping"
+Vendor Management,Hong Kong,Jackie Chan,Amy Leung,Procurement Lead APAC,Procurement Manager,"Vendor contracts, supplier rationalisation, contract novation, procurement policy"
+Change Management,Canada,Sophie Tremblay,Marc Bouchard,Integration Lead,Change & Communications Lead,"Stakeholder engagement, communications planning, training delivery, change impact assessment"
+Treasury,France,Pierre Dubois,Claire Martin,Group Treasurer EMEA,Treasury Manager,"Cash management, bank account rationalisation, FX hedging, intercompany funding, SEPA"
+Tax,China,Li Wei,Zhang Ming,Regional Tax Lead Greater China,Tax Director,"China corporate tax, VAT, WFOE structuring, transfer pricing, tax registration China"
+Finance Mapping,Malaysia,Ahmad Razif,Siti Nadiah,APAC Controller,Finance Systems Analyst,"Chart of accounts, SAP S/4HANA, cost centre mapping, Malaysia GAAP, intercompany transactions"
+Accounting,Singapore,Rachel Teo,Kevin Lim,CFO Office APAC,Senior Accountant,"IFRS, financial reporting, consolidation, intercompany accounting, Singapore FRS"
