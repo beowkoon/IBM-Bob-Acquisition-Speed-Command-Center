@@ -213,6 +213,7 @@ uploaded_budget = st.sidebar.file_uploader("Budget CSV", type="csv")
 uploaded_legal_entities = st.sidebar.file_uploader("Legal entities CSV", type="csv")
 uploaded_sme_directory = st.sidebar.file_uploader("SME directory CSV", type="csv")
 uploaded_knowledge_library = st.sidebar.file_uploader("Knowledge library TXT", type="txt")
+uploaded_sod_matrix = st.sidebar.file_uploader("SoD matrix CSV", type="csv")
 st.sidebar.markdown("---")
 st.sidebar.caption("IBM Bob Acquisition Speed Command Center v1.0")
 
@@ -223,6 +224,7 @@ try:
     budget = pd.read_csv(uploaded_budget or "sample_data/budget.csv")
     legal_entities = pd.read_csv(uploaded_legal_entities or "sample_data/legal_entities.csv")
     sme_directory = pd.read_csv(uploaded_sme_directory or "sample_data/sme_directory.csv")
+    sod_matrix = pd.read_csv(uploaded_sod_matrix if uploaded_sod_matrix is not None else "sample_data/sod_matrix.csv")
 
     if uploaded_knowledge_library is not None:
         knowledge_library_text = uploaded_knowledge_library.getvalue().decode("utf-8")
@@ -680,15 +682,19 @@ try:
 
     # ── RISKS TAB ──────────────────────────────────────────────────────────────
     with risks_tab:
+        sod_critical = (sod_matrix["severity"] == "Critical").sum() if "severity" in sod_matrix.columns else 0
+        sod_high = (sod_matrix["severity"] == "High").sum() if "severity" in sod_matrix.columns else 0
+
         render_tab_header(
-            "Risks",
-            "Monitor all integration risks. Critical and High risks must have owners and mitigation plans. Escalate Critical risks to the executive sponsor immediately.",
+            "Risks & Controls",
+            "Monitor all integration risks and separation of duties (SoD) conflicts. No single individual should be able to Authorize, Record, Verify, and hold Custody for the same process.",
         )
-        risk_metric_col1, risk_metric_col2, risk_metric_col3, risk_metric_col4 = st.columns(4)
+        risk_metric_col1, risk_metric_col2, risk_metric_col3, risk_metric_col4, risk_metric_col5 = st.columns(5)
         risk_metric_col1.metric("Total Risks", len(risks))
-        risk_metric_col2.metric("Critical", int(critical_risks))
-        risk_metric_col3.metric("High", int(high_risks))
-        risk_metric_col4.metric("Medium", int(medium_risks))
+        risk_metric_col2.metric("Critical Risks", int(critical_risks))
+        risk_metric_col3.metric("High Risks", int(high_risks))
+        risk_metric_col4.metric("SoD Critical Conflicts", int(sod_critical))
+        risk_metric_col5.metric("SoD High Conflicts", int(sod_high))
         st.markdown("---")
 
         if critical_risks > 0:
@@ -725,6 +731,75 @@ try:
         st.markdown("---")
         st.subheader("Full Risk Register")
         st.dataframe(risks, use_container_width=True)
+
+        # ── SoD SECTION ───────────────────────────────────────────────────────
+        st.markdown("---")
+        st.subheader("Separation of Duties (SoD) Assessment")
+        st.markdown(
+            """<div class='executive-card'>
+            <b>SoD Definition:</b> No single individual should be able to perform more than one of the following roles for the same process or transaction:<br><br>
+            &nbsp;&nbsp;🔴 <b>Authorize</b> — Approve or sanction a transaction, action, or access<br>
+            &nbsp;&nbsp;📝 <b>Record</b> — Enter, post, or maintain data in systems or ledgers<br>
+            &nbsp;&nbsp;✅ <b>Verify</b> — Reconcile, review, or validate transactions or balances<br>
+            &nbsp;&nbsp;🔒 <b>Custody</b> — Hold, safeguard, or control assets or privileged system access<br><br>
+            A person holding two or more of these roles for the same process represents an <b>SoD conflict</b> that could enable financial loss, fraud, or undetected errors.
+            </div>""",
+            unsafe_allow_html=True,
+        )
+
+        sod_col1, sod_col2 = st.columns(2)
+        with sod_col1:
+            st.subheader("SoD by Process")
+            process_filter = st.selectbox("Filter by process", ["All"] + sorted(sod_matrix["process"].dropna().unique().tolist()), key="sod_process_filter")
+        with sod_col2:
+            st.subheader("SoD by Role")
+            role_filter = st.selectbox("Filter by SoD role", ["All", "Authorize", "Record", "Verify", "Custody"], key="sod_role_filter")
+
+        sod_filtered = sod_matrix.copy()
+        if process_filter != "All":
+            sod_filtered = sod_filtered[sod_filtered["process"] == process_filter]
+        if role_filter != "All":
+            sod_filtered = sod_filtered[sod_filtered["sod_role"] == role_filter]
+
+        st.caption(f"Showing {len(sod_filtered)} SoD tasks — {(sod_filtered['severity'] == 'Critical').sum()} Critical, {(sod_filtered['severity'] == 'High').sum()} High")
+
+        if sod_critical > 0:
+            st.markdown("#### Critical SoD Conflicts")
+            for _, row in sod_filtered[sod_filtered["severity"] == "Critical"].iterrows():
+                st.markdown(
+                    f"<div class='risk-row'>{severity_badge('Critical')} &nbsp; <b>{row['process']}</b> — {row['task']}<br>"
+                    f"<small><b>SoD Role:</b> {row['sod_role']} &nbsp;|&nbsp; <b>Assigned To:</b> {row['assigned_to']} &nbsp;|&nbsp; <b>Conflicts With:</b> {row['conflicts_with']}</small><br>"
+                    f"<small><b>Risk:</b> {row['sod_risk']}</small><br>"
+                    f"<small><b>Mitigation:</b> {row['mitigation']}</small>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+        st.markdown("#### High SoD Conflicts")
+        for _, row in sod_filtered[sod_filtered["severity"] == "High"].iterrows():
+            st.markdown(
+                f"<div class='risk-row'>{severity_badge('High')} &nbsp; <b>{row['process']}</b> — {row['task']}<br>"
+                f"<small><b>SoD Role:</b> {row['sod_role']} &nbsp;|&nbsp; <b>Assigned To:</b> {row['assigned_to']} &nbsp;|&nbsp; <b>Conflicts With:</b> {row['conflicts_with']}</small><br>"
+                f"<small><b>Risk:</b> {row['sod_risk']}</small><br>"
+                f"<small><b>Mitigation:</b> {row['mitigation']}</small>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("#### Medium SoD Items")
+        for _, row in sod_filtered[sod_filtered["severity"] == "Medium"].iterrows():
+            st.markdown(
+                f"<div class='risk-row'>{severity_badge('Medium')} &nbsp; <b>{row['process']}</b> — {row['task']}<br>"
+                f"<small><b>SoD Role:</b> {row['sod_role']} &nbsp;|&nbsp; <b>Assigned To:</b> {row['assigned_to']} &nbsp;|&nbsp; <b>Conflicts With:</b> {row['conflicts_with']}</small><br>"
+                f"<small><b>Risk:</b> {row['sod_risk']}</small><br>"
+                f"<small><b>Mitigation:</b> {row['mitigation']}</small>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("---")
+        st.subheader("Full SoD Matrix")
+        st.dataframe(sod_matrix, use_container_width=True)
 
     # ── BUDGET TAB ─────────────────────────────────────────────────────────────
     with budget_tab:

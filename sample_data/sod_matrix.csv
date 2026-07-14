@@ -1,0 +1,29 @@
+process,task,sod_role,assigned_to,conflicts_with,sod_risk,severity,mitigation
+Accounts Payable,Approve vendor invoices,Authorize,Finance Manager,Record / Verify,Single person approving and recording vendor invoices,High,Separate invoice approval from journal entry posting
+Accounts Payable,Post journal entries,Record,Accountant,Authorize / Verify,Accountant who records also approves,High,Assign dedicated AP processor separate from approver
+Accounts Payable,Reconcile AP ledger,Verify,Finance Controller,Record,Controller reconciles entries they also posted,High,Assign independent reconciler for AP ledger
+Accounts Payable,Hold vendor payment details,Custody,Treasury,Authorize,Treasury holds payments and approves invoices,Critical,Separate treasury custody from invoice authorization
+Accounts Receivable,Raise customer invoices,Authorize,Sales Manager,Record,Sales raises and records invoices,Medium,Finance to independently raise invoices based on confirmed orders
+Accounts Receivable,Post AR journal entries,Record,Accountant,Authorize / Verify,AR accountant records and verifies own entries,High,Assign independent AR reviewer
+Accounts Receivable,Reconcile AR ledger,Verify,Finance Controller,Record,Controller reconciles AR they also posted,High,Assign independent AR reconciler
+Accounts Receivable,Manage customer receipts,Custody,Treasury,Record,Treasury receives cash and records receipts,Critical,Separate cash custody from AR recording
+Payroll,Approve payroll run,Authorize,HR Manager,Record / Verify,HR approves and reviews own payroll entries,High,Finance to independently approve payroll before processing
+Payroll,Process payroll journal,Record,Payroll Accountant,Authorize,Payroll accountant authorizes and processes,High,HR Manager to authorize; payroll team to process only
+Payroll,Review payroll output,Verify,Finance Controller,Record,Controller reviews payroll they also processed,High,Assign independent payroll reviewer separate from processor
+Payroll,Manage employee bank details,Custody,Payroll Team,Authorize / Record,Payroll team holds bank details and processes payments,Critical,Separate custody of bank details from payroll processing
+General Ledger,Post manual journal entries,Record,Accountant,Authorize / Verify,Accountant posts and approves own journals,High,Require secondary approval for all manual journal entries
+General Ledger,Approve manual journal entries,Authorize,Finance Manager,Record,Manager who approves also posts journals,High,Segregate journal posting from journal approval
+General Ledger,Perform account reconciliation,Verify,Finance Controller,Record,Controller reconciles accounts they also posted,High,Assign reconciliation to staff not involved in posting
+General Ledger,Manage system chart of accounts,Custody,IT / Finance Systems,Authorize,Systems team manages COA and approves changes,Medium,Finance Controller to approve all COA changes; IT to implement only
+Fixed Assets,Authorize asset additions,Authorize,CFO / Finance Director,Record,CFO authorizes and records asset additions,Medium,CFO authorizes; accountant records separately
+Fixed Assets,Record asset additions,Record,Accountant,Authorize / Verify,Accountant records and verifies own asset entries,High,Separate asset recording from verification
+Fixed Assets,Verify physical asset existence,Verify,Internal Audit / Controller,Custody,Controller verifies assets they also hold,High,Assign independent team for physical asset verification
+Fixed Assets,Hold and safeguard physical assets,Custody,Operations,Authorize,Operations holds assets and approves disposals,Medium,Finance to separately authorize all asset disposals
+Bank and Treasury,Authorize bank payments,Authorize,CFO / Finance Director,Custody,CFO authorizes payments and holds signing authority,Critical,Dual authorization required for all bank payments above threshold
+Bank and Treasury,Process bank payment instructions,Record,Treasury Accountant,Authorize,Treasury processes and authorizes own payments,Critical,Separate payment processing from authorization; require dual approval
+Bank and Treasury,Reconcile bank statements,Verify,Finance Controller,Custody,Controller reconciles accounts they also manage,High,Assign independent bank reconciler not involved in payment processing
+Bank and Treasury,Hold bank account credentials,Custody,Treasury,Authorize / Record,Treasury holds credentials and processes transactions,Critical,Implement dual custody for bank credentials; restrict access to authorized signatories only
+Procurement,Approve purchase orders,Authorize,Procurement Manager,Custody,Procurement approves and holds vendor relationships,High,Finance to co-approve POs above threshold; procurement to manage vendors only
+Procurement,Raise and record purchase orders,Record,Procurement Analyst,Authorize,Analyst raises and approves own POs,High,Require manager approval before PO is raised
+Procurement,Verify goods receipt,Verify,Warehouse / Operations,Record,Operations verifies and records own receipts,Medium,Finance to independently verify goods receipt against PO
+Procurement,Manage vendor master data,Custody,Procurement / AP Team,Authorize,AP team manages vendor data and approves payments,Critical,IT / Finance Controls to separately manage vendor master; AP to process only

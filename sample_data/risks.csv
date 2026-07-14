@@ -9,3 +9,10 @@ R007,Systems access provisioning delayed,High,Sarah Chen,In Progress,Coordinate 
 R008,Vendor contracts not reviewed,Medium,David Lim,Open,Legal to review all active vendor contracts for assignment
 R009,Finance reporting timeline at risk,Medium,Alice Tan,In Progress,Confirm close calendar alignment with Finance leadership
 R010,Workforce alignment plan not finalised,Medium,John Lee,Open,Complete org design and confirm reporting lines before Day 100
+R011,SoD conflict - payroll approval and processing held by same person,Critical,John Lee,Open,Separate payroll authorization from payroll processing immediately
+R012,SoD conflict - bank payment authorization and custody held by same person,Critical,Kevin Wong,Open,Implement dual authorization for all bank payments before Day 1
+R013,SoD conflict - vendor master management and AP payment processing by same team,Critical,Alice Tan,Open,Restrict vendor master access to Finance Controls team only
+R014,SoD conflict - manual journal entry posting and approval by same person,High,Alice Tan,Open,Require secondary approval for all manual journal entries
+R015,SoD conflict - AR recording and cash receipt custody not separated,High,Alice Tan,Open,Separate AR recording from cash receipt management
+R016,No independent reconciler assigned for AP ledger,High,Alice Tan,Open,Assign Finance Controller as independent AP reconciler
+R017,Acquired entity controls framework not assessed against IBM standards,High,David Lim,Open,Conduct IBM controls gap assessment for all acquired entities before Day 100
