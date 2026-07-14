@@ -10,7 +10,7 @@ Follow these steps to identify and route to the right Finance or Accounting SME 
 ## Step 1 — Understand the Request
 
 Clarify what the user needs:
-- **Function** — e.g. Finance Mapping, Accounting, Tax, Treasury
+- **Function** — e.g. Accounting & Process Mapping, Accounting, Tax, Treasury
 - **Geography** — e.g. Singapore, Malaysia, APAC, US
 - **Skill required** — e.g. chart of accounts, SAP S/4HANA, IFRS, consolidation, intercompany, cost centre mapping
 - **Job profile** — e.g. Controller, Finance Integration Lead, Senior Accountant
@@ -24,7 +24,7 @@ Use `read_file` to read `sample_data/sme_directory.csv` (or uploaded file if ava
 Key columns to use for matching:
 | Column | Used for |
 |---|---|
-| `function` | Match by workstream (Finance Mapping, Accounting, Tax, Treasury) |
+| `function` | Match by workstream (Accounting & Process Mapping, Accounting, Tax, Treasury) |
 | `geography` | Match by country or region |
 | `primary_sme` | First point of contact |
 | `backup_sme` | Use if primary is unavailable |

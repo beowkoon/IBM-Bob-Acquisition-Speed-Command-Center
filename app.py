@@ -106,7 +106,7 @@ st.markdown(
 
 st.title("IBM Bob Acquisition Speed Command Center")
 workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
-integration_lead = st.text_input("Integration Lead", value="BEOW KOON HENG")
+integration_lead = st.text_input("Integration Lead", value="Priya Nair")
 region = st.selectbox("Region", ["APAC", "Americas", "EMEA", "Japan"])
 date_col1, date_col2 = st.columns(2)
 with date_col1:
@@ -355,7 +355,7 @@ try:
             journey_steps = [
                 ("Due Diligence",             "Complete"),
                 ("Day 1 Readiness",           "In Progress"),
-                ("Finance Mapping",           "In Progress"),
+                ("Accounting & Process Mapping", "In Progress"),
                 ("Workforce Alignment",       "Not Started"),
                 ("Systems & Controls",        "At Risk"),
                 ("Legal Entity Simplif.",     "In Progress"),
@@ -515,12 +515,12 @@ try:
                 st.subheader("Risks"); st.write("Forecast variance may indicate scope creep or unplanned integration costs.")
                 st.subheader("Next Steps"); st.write("Open the Budget tab to review detailed spend by category.")
             elif "coa" in question_lower or "account" in question_lower or "finance" in question_lower:
-                st.write("IBM Bob identified finance mapping as the first priority. Chart of accounts alignment must be completed before the first consolidated close.")
-                st.subheader("Agent Capabilities Used"); st.write("- Finance & Account Mapping Agent\n- Integration Navigator Agent")
-                st.subheader("Recommended Actions"); st.write("1. Upload and validate chart of accounts files.\n2. Map key accounts to the IBM target structure.\n3. Identify unresolved mapping gaps and assign owners.")
+                st.write("IBM Bob identified accounting and process mapping as the first priority. Chart of accounts alignment, process design, and ERP mapping must all be completed before the first consolidated close.")
+                st.subheader("Agent Capabilities Used"); st.write("- Finance & Account Mapping Agent\n- Integration Navigator Agent\n- Systems & Process Mapping Agent")
+                st.subheader("Recommended Actions"); st.write("1. Upload and validate chart of accounts and process mapping files.\n2. Map key accounts and business processes to the IBM target structure.\n3. Identify unresolved mapping gaps and assign owners.\n4. Confirm ERP and system integration points for each mapped process.")
                 st.subheader("Owners"); st.write(f"{integration_lead}, Finance, APAC Controller")
-                st.subheader("Risks"); st.write("Unresolved COA mapping blocks the first consolidated close and financial reporting.")
-                st.subheader("Next Steps"); st.write("Coordinate with Finance SME to validate COA mapping and confirm close calendar alignment.")
+                st.subheader("Risks"); st.write("Unresolved COA and process mapping blocks the first consolidated close, ERP cutover, and financial reporting.")
+                st.subheader("Next Steps"); st.write("Coordinate with Finance SME to validate COA and process mapping. Confirm close calendar and ERP cutover timeline.")
             elif "risk" in question_lower or "highest risk" in question_lower or "critical" in question_lower:
                 top_risks = risks[risks["severity"].isin(["Critical", "High"])].head(5)
                 st.write(f"IBM Bob identified {critical_risks} Critical and {high_risks} High risks. The highest priority risk is: '{risks.iloc[0]['risk']}' — owned by {risks.iloc[0]['owner']}.")
@@ -932,7 +932,7 @@ try:
             st.write("- Legal Entity Optimization")
             st.subheader("Recommended Actions")
             st.write("1. Upload COA, legal entity, workforce, risk, and budget files.")
-            st.write("2. Review finance mapping gaps and assign APAC Controller as Finance SME.")
+            st.write("2. Review accounting and process mapping gaps and assign APAC Controller as Finance SME.")
             st.write(f"3. Review {len(merge_or_dissolve_entities)} legal entities flagged for merge or dissolve — estimated savings ${total_action_savings:,.0f}.")
             st.write("4. Confirm workforce reporting lines and identify role changes before Day 100.")
             st.write(f"5. Assign {integration_lead} and functional owners to the highest-priority actions.")
@@ -945,7 +945,7 @@ try:
             st.subheader("Budget / Savings / Cash Impact")
             st.write(f"Forecast spend: ${forecast_spend:,.0f}  |  Estimated savings: ${estimated_savings:,.0f}  |  Total value opportunity: ${total_value_opportunity:,.0f}")
             st.subheader("Readiness Impact")
-            st.write("Finance mapping, workforce alignment, and legal entity simplification are the three critical readiness drivers for Day 100.")
+            st.write("Accounting and process mapping, workforce alignment, and legal entity simplification are the three critical readiness drivers for Day 100.")
             st.subheader("Next Steps")
             st.write("Complete data uploads, confirm SME coverage for all functions, and refresh the dashboard to validate integration readiness.")
 
