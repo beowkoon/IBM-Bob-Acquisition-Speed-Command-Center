@@ -1,21 +1,21 @@
 risk_id,risk,severity,owner,status,mitigation
-R001,Chart of accounts mapping incomplete — 40% of accounts unmapped across 12 entities,Critical,Alice Tan,Open,Engage Finance SME to complete COA mapping by Day 1; escalate to APAC Controller
-R002,Payroll continuity at risk — Japan payroll SME not confirmed for Day 1,Critical,John Lee,In Progress,Assign Yuki Sato as primary payroll SME; confirm payroll system cutover date immediately
-R003,Legal entity review incomplete — 9 of 60 entities pending final action decision,High,David Lim,In Progress,Schedule legal entity review session with Legal and Tax; target completion by Day 30
-R004,Budget overrun risk — IT & Systems forecast exceeds budget by 12%,High,Kevin Wong,Open,Review IT scope assumptions; identify and defer non-critical system integration items
-R005,HR data migration not started — 480 employee records not yet mapped,Critical,John Lee,Open,Initiate HR data mapping immediately; assign HR Integration SME to lead migration
-R006,Tax registration incomplete in Malaysia — revenue recognition blocked,Critical,Nur Aisyah,Open,Engage Regional Tax Lead to complete registration before Day 1; do not book revenue until resolved
-R007,Systems access provisioning delayed — 320 users without Day 1 access,Critical,Sarah Chen,In Progress,Coordinate with IT to accelerate provisioning; prioritise finance and operations users
-R008,Vendor contracts not reviewed — 24 active contracts pending novation,High,David Lim,Open,Legal to review and novate all active vendor contracts; prioritise revenue-linked contracts
-R009,Finance reporting timeline at risk — first consolidated close in 28 days,High,Alice Tan,In Progress,Confirm close calendar alignment with Finance leadership; assign dedicated close project manager
-R010,Workforce alignment plan not finalised — reporting lines unconfirmed in 3 geographies,High,John Lee,Open,Complete org design and confirm reporting lines for APAC, EMEA, and Americas before Day 100
-R011,SoD conflict — payroll approval and processing held by same person,Critical,John Lee,Open,Separate payroll authorization from payroll processing immediately; assign independent approver
-R012,SoD conflict — bank payment authorization and custody held by same person,Critical,Kevin Wong,Open,Implement dual authorization for all bank payments above USD 10K before Day 1
-R013,SoD conflict — vendor master management and AP payment processing by same team,Critical,Alice Tan,Open,Restrict vendor master access to Finance Controls team only; AP to process payments only
-R014,SoD conflict — manual journal entry posting and approval by same person,High,Alice Tan,Open,Require secondary approval for all manual journal entries in the General Ledger
-R015,SoD conflict — AR recording and cash receipt custody not separated,High,Alice Tan,Open,Separate AR recording from cash receipt management; assign independent AR reconciler
-R016,No independent reconciler assigned for AP ledger — reconciliation backlog growing,High,Alice Tan,Open,Assign Finance Controller as independent AP reconciler before first consolidated close
+R001,Chart of accounts mapping incomplete - 40% of accounts unmapped across 12 entities,Critical,Alice Tan,Open,Engage Finance SME to complete COA mapping by Day 1 and escalate to APAC Controller
+R002,Payroll continuity at risk - Japan payroll SME not confirmed for Day 1,Critical,John Lee,In Progress,Assign Yuki Sato as primary payroll SME and confirm payroll system cutover date immediately
+R003,Legal entity review incomplete - 9 of 60 entities pending final action decision,High,David Lim,In Progress,Schedule legal entity review session with Legal and Tax; target completion by Day 30
+R004,Budget overrun risk - IT and Systems forecast exceeds budget by 12%,High,Kevin Wong,Open,Review IT scope assumptions and defer non-critical system integration items
+R005,HR data migration not started - 480 employee records not yet mapped,Critical,John Lee,Open,Initiate HR data mapping immediately and assign HR Integration SME to lead migration
+R006,Tax registration incomplete in Malaysia - revenue recognition blocked,Critical,Nur Aisyah,Open,Engage Regional Tax Lead to complete registration before Day 1 and do not book revenue until resolved
+R007,Systems access provisioning delayed - 320 users without Day 1 access,Critical,Sarah Chen,In Progress,Coordinate with IT to accelerate provisioning and prioritise finance and operations users
+R008,Vendor contracts not reviewed - 24 active contracts pending novation,High,David Lim,Open,Legal to review and novate all active vendor contracts and prioritise revenue-linked contracts
+R009,Finance reporting timeline at risk - first consolidated close in 28 days,High,Alice Tan,In Progress,Confirm close calendar alignment with Finance leadership and assign dedicated close project manager
+R010,Workforce alignment plan not finalised - reporting lines unconfirmed in 3 geographies,High,John Lee,Open,Complete org design and confirm reporting lines for APAC and EMEA and Americas before Day 100
+R011,SoD conflict - payroll approval and processing held by same person,Critical,John Lee,Open,Separate payroll authorization from payroll processing immediately and assign independent approver
+R012,SoD conflict - bank payment authorization and custody held by same person,Critical,Kevin Wong,Open,Implement dual authorization for all bank payments above USD 10K before Day 1
+R013,SoD conflict - vendor master management and AP payment processing by same team,Critical,Alice Tan,Open,Restrict vendor master access to Finance Controls team only; AP to process payments only
+R014,SoD conflict - manual journal entry posting and approval by same person,High,Alice Tan,Open,Require secondary approval for all manual journal entries in the General Ledger
+R015,SoD conflict - AR recording and cash receipt custody not separated,High,Alice Tan,Open,Separate AR recording from cash receipt management and assign independent AR reconciler
+R016,No independent reconciler assigned for AP ledger - reconciliation backlog growing,High,Alice Tan,Open,Assign Finance Controller as independent AP reconciler before first consolidated close
 R017,Acquired entity controls framework not assessed against IBM standards,High,David Lim,Open,Conduct IBM controls gap assessment for all acquired entities before Day 100
-R018,GDPR data handling obligations not mapped — personal data transferred without assessment,High,Maria Ong,Open,Engage Compliance SME to complete GDPR assessment and data transfer agreements
-R019,ERP cutover plan not confirmed — risk of dual-running systems past Day 1,High,Sarah Chen,Open,Confirm ERP cutover date with IT Integration Architect; finalize data migration plan
-R020,Change management communications not started — employee uncertainty increasing,Medium,Priya Nair,Open,Launch Day 1 communication plan immediately; brief all managers before Day 1
+R018,GDPR data handling obligations not mapped - personal data transferred without assessment,High,Maria Ong,Open,Engage Compliance SME to complete GDPR assessment and data transfer agreements
+R019,ERP cutover plan not confirmed - risk of dual-running systems past Day 1,High,Sarah Chen,Open,Confirm ERP cutover date with IT Integration Architect and finalize data migration plan
+R020,Change management communications not started - employee uncertainty increasing,Medium,Priya Nair,Open,Launch Day 1 communication plan immediately and brief all managers before Day 1
