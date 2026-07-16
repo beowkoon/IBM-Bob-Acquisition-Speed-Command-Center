@@ -436,27 +436,62 @@ try:
             # Budget overview panel
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.markdown("**Budget by Business Unit**")
-            budget_items = list(zip(budget["category"], budget["forecast_spend"]))
-            total_fc = budget["forecast_spend"].sum()
-            for cat, val in budget_items:
-                pct = int(val / total_fc * 100) if total_fc else 0
+            # Legend
+            st.markdown(
+                """<div style="display:flex;gap:14px;font-size:11px;color:#57606a;margin-bottom:10px;">
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#0f62fe;border-radius:2px;margin-right:3px;"></span>Actual</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#74b1ff;border-radius:2px;margin-right:3px;"></span>Forecast (remaining)</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#e5e7eb;border-radius:2px;margin-right:3px;"></span>Budget (remaining)</span>
+                </div>""",
+                unsafe_allow_html=True,
+            )
+            max_bgt = budget["budget"].max()
+            for _, row in budget.iterrows():
+                cat         = row["category"]
+                bgt         = row["budget"]
+                actual      = row["actual_spend"]
+                forecast    = row["forecast_spend"]
+                # Segment widths as % of max budget so all bars share the same scale
+                actual_w    = int(actual   / max_bgt * 100) if max_bgt else 0
+                fc_rem_w    = max(0, int((forecast - actual) / max_bgt * 100)) if max_bgt else 0
+                bgt_rem_w   = max(0, int((bgt - forecast)   / max_bgt * 100)) if max_bgt else 0
+                over_budget = forecast > bgt
+                fc_color    = "#fa4d56" if over_budget else "#74b1ff"
                 st.markdown(
-                    f"""<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
-                        <div style="width:120px;font-size:12px;color:#444;">{cat}</div>
-                        <div style="flex:1;background:#e5e7eb;border-radius:3px;height:10px;">
-                            <div style="width:{pct}%;background:#0f62fe;height:10px;border-radius:3px;"></div>
+                    f"""<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+                        <div style="width:110px;font-size:12px;color:#1f2328;font-weight:500;white-space:nowrap;">{cat}</div>
+                        <div style="flex:1;display:flex;border-radius:4px;overflow:hidden;height:12px;background:#e5e7eb;">
+                            <div style="width:{actual_w}%;background:#0f62fe;height:12px;" title="Actual: ${actual/1000:.0f}K"></div>
+                            <div style="width:{fc_rem_w}%;background:{fc_color};height:12px;" title="Forecast remaining: ${(forecast-actual)/1000:.0f}K"></div>
+                            <div style="width:{bgt_rem_w}%;background:#e5e7eb;height:12px;" title="Budget remaining: ${(bgt-forecast)/1000:.0f}K"></div>
                         </div>
-                        <div style="width:55px;text-align:right;font-size:12px;color:#444;">${val/1000:.0f}K</div>
+                        <div style="width:62px;text-align:right;font-size:11px;color:#57606a;white-space:nowrap;">${bgt/1000:.0f}K</div>
                     </div>""",
                     unsafe_allow_html=True,
                 )
+            # Totals row
+            t_bgt    = budget["budget"].sum()
+            t_actual = budget["actual_spend"].sum()
+            t_fc     = budget["forecast_spend"].sum()
+            t_act_w  = int(t_actual / t_bgt * 100) if t_bgt else 0
+            t_fc_w   = max(0, int((t_fc - t_actual) / t_bgt * 100)) if t_bgt else 0
+            t_over   = t_fc > t_bgt
+            t_fc_col = "#fa4d56" if t_over else "#74b1ff"
             st.markdown(
-                f"""<div style="display:flex;align-items:center;gap:8px;margin-top:8px;border-top:1px solid #e5e7eb;padding-top:6px;">
-                    <div style="width:120px;font-size:12px;font-weight:700;">Forecast Total</div>
-                    <div style="flex:1;background:#e5e7eb;border-radius:3px;height:10px;">
-                        <div style="width:100%;background:#42be65;height:10px;border-radius:3px;"></div>
+                f"""<div style="border-top:1px solid #e5e7eb;padding-top:7px;margin-top:4px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:110px;font-size:12px;font-weight:700;">Total</div>
+                        <div style="flex:1;display:flex;border-radius:4px;overflow:hidden;height:12px;background:#e5e7eb;">
+                            <div style="width:{t_act_w}%;background:#0f62fe;height:12px;"></div>
+                            <div style="width:{t_fc_w}%;background:{t_fc_col};height:12px;"></div>
+                        </div>
+                        <div style="width:62px;text-align:right;font-size:11px;color:#57606a;">${t_bgt/1e6:.1f}M</div>
                     </div>
-                    <div style="width:55px;text-align:right;font-size:12px;font-weight:700;color:#0f62fe;">${total_fc/1e6:.2f}M</div>
+                    <div style="display:flex;gap:16px;font-size:11px;color:#57606a;margin-top:5px;padding-left:118px;">
+                        <span>Actual <b style="color:#0f62fe;">${t_actual/1e6:.1f}M</b></span>
+                        <span>Forecast <b style="color:{'#fa4d56' if t_over else '#1f2328'};">${t_fc/1e6:.1f}M</b></span>
+                        <span>Budget <b>${t_bgt/1e6:.1f}M</b></span>
+                    </div>
                 </div>""",
                 unsafe_allow_html=True,
             )
