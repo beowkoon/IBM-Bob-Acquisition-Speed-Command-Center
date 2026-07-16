@@ -436,27 +436,66 @@ try:
             # Budget overview panel
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.markdown("**Budget by Business Unit**")
-            budget_items = list(zip(budget["category"], budget["forecast_spend"]))
-            total_fc = budget["forecast_spend"].sum()
-            for cat, val in budget_items:
-                pct = int(val / total_fc * 100) if total_fc else 0
+            # Legend
+            st.markdown(
+                """<div style="display:flex;gap:16px;font-size:11px;color:#57606a;margin-bottom:8px;">
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#e5e7eb;border-radius:2px;margin-right:4px;"></span>Budget</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#0f62fe;border-radius:2px;margin-right:4px;"></span>Actual Spend</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#42be65;border-radius:2px;margin-right:4px;"></span>Under budget</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#fa4d56;border-radius:2px;margin-right:4px;"></span>Over budget</span>
+                </div>""",
+                unsafe_allow_html=True,
+            )
+            max_budget = budget["budget"].max()
+            for _, row in budget.iterrows():
+                cat        = row["category"]
+                bgt        = row["budget"]
+                actual     = row["actual_spend"]
+                forecast   = row["forecast_spend"]
+                savings    = row["estimated_savings"]
+                # bar widths as % of max budget
+                bgt_pct    = int(bgt / max_budget * 100) if max_budget else 0
+                actual_pct = int(actual / max_budget * 100) if max_budget else 0
+                fc_pct     = int(forecast / max_budget * 100) if max_budget else 0
+                variance   = forecast - bgt
+                var_pct    = round(variance / bgt * 100, 1) if bgt else 0
+                var_color  = "#fa4d56" if variance > 0 else "#42be65"
+                var_label  = f"+{var_pct:.0f}% over" if variance > 0 else f"{var_pct:.0f}% under"
                 st.markdown(
-                    f"""<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
-                        <div style="width:120px;font-size:12px;color:#444;">{cat}</div>
-                        <div style="flex:1;background:#e5e7eb;border-radius:3px;height:10px;">
-                            <div style="width:{pct}%;background:#0f62fe;height:10px;border-radius:3px;"></div>
+                    f"""<div style="margin-bottom:10px;">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+                            <span style="font-weight:600;color:#1f2328;">{cat}</span>
+                            <span style="color:#57606a;">
+                                Actual <b style="color:#0f62fe;">${actual/1000:.0f}K</b> &nbsp;|&nbsp;
+                                Forecast <b>${forecast/1000:.0f}K</b> &nbsp;|&nbsp;
+                                Budget <b>${bgt/1000:.0f}K</b> &nbsp;|&nbsp;
+                                <span style="color:{var_color};font-weight:700;">{var_label}</span>
+                            </span>
                         </div>
-                        <div style="width:55px;text-align:right;font-size:12px;color:#444;">${val/1000:.0f}K</div>
+                        <div style="position:relative;height:10px;background:#e5e7eb;border-radius:4px;">
+                            <div style="position:absolute;left:0;top:0;width:{fc_pct}%;height:10px;background:#d0e4ff;border-radius:4px;"></div>
+                            <div style="position:absolute;left:0;top:0;width:{actual_pct}%;height:10px;background:#0f62fe;border-radius:4px;"></div>
+                            <div style="position:absolute;left:{bgt_pct}%;top:-3px;width:2px;height:16px;background:#1f2328;border-radius:1px;" title="Budget"></div>
+                        </div>
                     </div>""",
                     unsafe_allow_html=True,
                 )
+            total_bgt = budget["budget"].sum()
+            total_actual = budget["actual_spend"].sum()
+            total_fc = budget["forecast_spend"].sum()
+            total_var = total_fc - total_bgt
+            total_var_pct = round(total_var / total_bgt * 100, 1) if total_bgt else 0
+            total_var_color = "#fa4d56" if total_var > 0 else "#42be65"
+            total_var_label = f"+{total_var_pct:.0f}% over" if total_var > 0 else f"{total_var_pct:.0f}% under"
             st.markdown(
-                f"""<div style="display:flex;align-items:center;gap:8px;margin-top:8px;border-top:1px solid #e5e7eb;padding-top:6px;">
-                    <div style="width:120px;font-size:12px;font-weight:700;">Forecast Total</div>
-                    <div style="flex:1;background:#e5e7eb;border-radius:3px;height:10px;">
-                        <div style="width:100%;background:#42be65;height:10px;border-radius:3px;"></div>
-                    </div>
-                    <div style="width:55px;text-align:right;font-size:12px;font-weight:700;color:#0f62fe;">${total_fc/1e6:.2f}M</div>
+                f"""<div style="border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px;display:flex;justify-content:space-between;font-size:12px;">
+                    <span style="font-weight:700;">Total</span>
+                    <span style="color:#57606a;">
+                        Actual <b style="color:#0f62fe;">${total_actual/1e6:.2f}M</b> &nbsp;|&nbsp;
+                        Forecast <b>${total_fc/1e6:.2f}M</b> &nbsp;|&nbsp;
+                        Budget <b>${total_bgt/1e6:.2f}M</b> &nbsp;|&nbsp;
+                        <span style="color:{total_var_color};font-weight:700;">{total_var_label}</span>
+                    </span>
                 </div>""",
                 unsafe_allow_html=True,
             )
