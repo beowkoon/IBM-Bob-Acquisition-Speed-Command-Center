@@ -467,7 +467,7 @@ try:
                         <div style="margin-bottom:4px;"><span style="color:#42be65;">●</span> Retain &nbsp;<b>{retain_count}</b></div>
                         <div style="margin-bottom:4px;"><span style="color:#888;">●</span> Total Entities &nbsp;<b>{total_ent}</b></div>
                         <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:11px;color:#57606a;">
-                            For details, refer to the <b>Legal Entities</b> tab.
+                            For details, refer to the <a href="#legal-entities" onclick="window.scrollTo(0,0);setTimeout(function(){{var tabs=window.parent.document.querySelectorAll('[data-baseweb=tab]');if(tabs[4])tabs[4].click();}},200);return false;" style="color:#0f62fe;text-decoration:underline;cursor:pointer;font-weight:600;">Legal Entities tab ↗</a>
                         </div>
                     </div>""",
                     unsafe_allow_html=True,
