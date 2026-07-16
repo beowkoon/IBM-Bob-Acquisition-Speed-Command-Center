@@ -105,9 +105,13 @@ st.markdown(
 )
 
 st.title("IBM Bob Acquisition Speed Command Center")
-workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
-integration_lead = st.text_input("Integration Lead", value="Priya Nair")
-region = st.selectbox("Region", ["APAC", "Americas", "EMEA", "Japan"])
+row1_col1, row1_col2, row1_col3 = st.columns([2, 1.5, 1])
+with row1_col1:
+    workspace_name = st.text_input("Acquisition Workspace Name", value="Company X Integration")
+with row1_col2:
+    integration_lead = st.text_input("Integration Lead", value="Priya Nair")
+with row1_col3:
+    region = st.selectbox("Region", ["APAC", "Americas", "EMEA", "Japan"])
 date_col1, date_col2 = st.columns(2)
 with date_col1:
     day_1_date = st.date_input("Day 1 Target Date", value=date.today())
