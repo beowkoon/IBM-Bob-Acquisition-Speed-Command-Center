@@ -491,22 +491,30 @@ try:
 
             # ── Intent scoring: pick the highest-confidence topic ──
             scores = {
-                "sod":        sum([q.count(k) for k in ["sod", "segregation of duties", "separation of duties", "sod risk", "sod conflict", "dual approval", "dual authorization", "conflicting role", "conflicting roles"]]),
-                "legal":      sum([q.count(k) for k in ["legal entity", "legal entities", "merge", "dissolve", "dissolution", "entity simplif", "simplification", "retain"]]),
-                "payroll":    sum([q.count(k) for k in ["payroll", "japan", "salary", "compensation payroll"]]),
-                "budget":     sum([q.count(k) for k in ["budget", "spend", "forecast", "cost", "savings", "variance", "overspend"]]),
-                "coa":        sum([q.count(k) for k in ["coa", "chart of accounts", "erp", "accounting mapping", "account mapping", "close", "consolidated close"]]),
-                "risk":       sum([q.count(k) for k in ["risk", "risks", "critical risk", "high risk", "open risk", "escalate"]]),
-                "tax":        sum([q.count(k) for k in ["tax", "gst", "vat", "tax registration", "malaysia"]]),
-                "hr":         sum([q.count(k) for k in ["hr", "workforce", "employee", "headcount", "org design", "reporting line"]]),
-                "sme":        sum([q.count(k) for k in ["sme", "who can help", "contact", "expert", "specialist", "subject matter"]]),
-                "readiness":  sum([q.count(k) for k in ["readiness", "day 1", "day one", "day1", "ready", "not started", "at risk workstream"]]),
-                "harmonize":  sum([q.count(k) for k in ["harmonize", "harmonized", "harmonisation", "harmonization", "where do we", "multi-layer", "not harmonized", "process gap", "process layer"]]),
-                "finance":    sum([q.count(k) for k in ["finance", "financial", "accounting", "controller", "cfo", "ap ", "ar ", "accounts payable", "accounts receivable", "general ledger", "fixed asset", "bank payment", "procurement", "vendor"]]),
+                "sod":        sum([q.count(k) for k in ["sod", "segregation of duties", "separation of duties", "sod risk", "sod conflict", "dual approval", "dual authorization", "conflicting role", "conflicting roles", "controls conflict", "access conflict", "fraud risk", "misappropriation"]]),
+                "legal":      sum([q.count(k) for k in ["legal entity", "legal entities", "merge", "dissolve", "dissolution", "entity simplif", "simplification", "retain", "entity structure", "subsidiary", "holding company"]]),
+                "payroll":    sum([q.count(k) for k in ["payroll", "japan", "salary", "compensation payroll", "pay run", "employee pay", "payroll sme"]]),
+                "budget":     sum([q.count(k) for k in ["budget", "spend", "forecast", "cost", "savings", "variance", "overspend", "cash release", "cash impact", "value opportunity", "cash flow", "underspend", "capex", "opex"]]),
+                "coa":        sum([q.count(k) for k in ["coa", "chart of accounts", "erp", "accounting mapping", "account mapping", "close", "consolidated close", "system cutover", "cutover", "mapping gap", "account structure"]]),
+                "risk":       sum([q.count(k) for k in ["risk", "risks", "critical risk", "high risk", "open risk", "escalate", "all risks", "open risks", "risk register", "risk status", "unresolved risk", "outstanding risk"]]),
+                "tax":        sum([q.count(k) for k in ["tax", "gst", "vat", "tax registration", "malaysia", "tax compliance", "tax gap", "tax risk", "withholding"]]),
+                "hr":         sum([q.count(k) for k in ["hr", "workforce", "employee", "headcount", "org design", "reporting line", "org structure", "people", "talent", "benefits", "compensation", "change management"]]),
+                "sme":        sum([q.count(k) for k in ["sme", "who can help", "contact", "expert", "specialist", "subject matter", "who owns", "who is responsible", "find an sme", "subject matter expert"]]),
+                "readiness":  sum([q.count(k) for k in ["readiness", "day 1", "day one", "day1", "ready", "not started", "at risk workstream", "systems access", "it access", "access provisioning", "systems integration", "it integration", "systems readiness", "day 100"]]),
+                "harmonize":  sum([q.count(k) for k in ["harmonize", "harmonized", "harmonisation", "harmonization", "where do we", "multi-layer", "not harmonized", "process gap", "process layer", "process alignment", "process design", "target operating model", "tom"]]),
+                "finance":    sum([q.count(k) for k in ["finance", "financial", "accounting", "controller", "cfo", "ap ", "ar ", "accounts payable", "accounts receivable", "general ledger", "fixed asset", "bank payment", "procurement", "vendor", "invoice", "journal", "reconcil", "bank reconcil", "treasury"]]),
+                "timeline":   sum([q.count(k) for k in ["timeline", "milestone", "when", "schedule", "integration plan", "integration timeline", "plan", "target date", "deadline", "roadmap", "100 day", "hundred day"]]),
+                "controls":   sum([q.count(k) for k in ["controls gap", "controls framework", "internal control", "control assessment", "ibm controls", "controls standard", "audit", "internal audit", "gap assessment", "controls review"]]),
             }
-            # SoD also triggered when both "sod"/"segregation" AND "risk" appear
+            # SoD hard-boost — always wins when the question is clearly about SoD
             if ("sod" in q or "segregation" in q or "separation of duties" in q or "sod conflict" in q or "sod risk" in q):
                 scores["sod"] += 10
+            # "open risks" / "all risks" boost — boost risk score so it beats the general case
+            if any(k in q for k in ["open risk", "all risk", "risk register", "outstanding risk", "unresolved risk"]):
+                scores["risk"] += 5
+            # cash release → budget, not general
+            if any(k in q for k in ["cash release", "cash impact", "cash flow", "value opportunity"]):
+                scores["budget"] += 5
             topic = max(scores, key=scores.get) if max(scores.values()) > 0 else "general"
 
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
@@ -572,8 +580,13 @@ try:
             elif topic == "budget":
                 st.write(f"IBM Bob reviewed integration spend: forecast of ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}, with estimated savings of ${estimated_savings:,.0f}. Budget variance is {budget_variance_pct:+.1f}%.")
                 st.subheader("Agent Capabilities Used"); st.write("- Budget & Value Tracking Agent")
+                bm1, bm2, bm3, bm4 = st.columns(4)
+                bm1.metric("Total Budget", f"${total_budget/1e6:.2f}M")
+                bm2.metric("Forecast Spend", f"${forecast_spend/1e6:.2f}M", delta=f"{budget_variance_pct:+.1f}% vs budget", delta_color="inverse")
+                bm3.metric("Estimated Savings", f"${estimated_savings/1000:.0f}K")
+                bm4.metric("Cash Release Opportunity", f"${cash_release_opportunity/1000:.0f}K")
                 st.subheader("Budget by Category"); st.dataframe(budget[["category","budget","actual_spend","forecast_spend","estimated_savings"]], use_container_width=True)
-                st.subheader("Recommended Actions"); st.write("1. Review current spend by category against plan.\n2. Validate forecast assumptions and savings targets.\n3. Escalate any overspend categories to the Integration Lead.")
+                st.subheader("Recommended Actions"); st.write("1. Review current spend by category against plan.\n2. Validate forecast assumptions and savings targets.\n3. Escalate any overspend categories to the Integration Lead.\n4. Confirm cash release timeline with Treasury.")
                 st.subheader("Owners"); st.write(f"{integration_lead}, Finance")
                 st.subheader("Risks"); st.write("Forecast variance may indicate scope creep or unplanned integration costs.")
                 st.subheader("Next Steps"); st.write("Open the Budget tab to review detailed spend by category.")
@@ -629,12 +642,24 @@ try:
                 st.subheader("Next Steps"); st.write("Open the Integration Status tab and assign owners to all At Risk and Not Started workstreams. Use the Accounting & Process Mapping tab to begin the process gap analysis.")
 
             elif topic == "risk":
-                top_risks = risks[risks["severity"].isin(["Critical", "High"])].head(5)
-                st.write(f"IBM Bob identified {critical_risks} Critical and {high_risks} High risks. Top priority: '{risks.iloc[0]['risk']}' — owned by {risks.iloc[0]['owner']}.")
-                st.subheader("Agent Capabilities Used"); st.write("- Risk & Controls Agent\n- Integration Navigator Agent")
-                st.subheader("Top Critical & High Risks"); st.dataframe(top_risks[["risk_id","severity","risk","owner","status","mitigation"]], use_container_width=True)
+                # If user asks for open/all risks show the relevant filtered set
+                if any(k in q for k in ["open risk", "all risk", "risk register", "outstanding", "unresolved", "full risk"]):
+                    display_risks = risks[risks["status"] == "Open"] if "open" in q else risks
+                    risk_label = "Open Risks" if "open" in q else "Full Risk Register"
+                    open_count = (risks["status"] == "Open").sum()
+                    st.write(f"IBM Bob found {open_count} open risks across the risk register. {critical_risks} Critical and {high_risks} High severity items require immediate attention.")
+                    st.subheader("Agent Capabilities Used"); st.write("- Risk & Controls Agent\n- Integration Navigator Agent")
+                    st.subheader(risk_label); st.dataframe(display_risks[["risk_id","severity","risk","owner","status","mitigation"]], use_container_width=True)
+                else:
+                    top_risks = risks[risks["severity"].isin(["Critical", "High"])].head(5)
+                    st.write(f"IBM Bob identified {critical_risks} Critical and {high_risks} High risks. Top priority: '{risks.iloc[0]['risk']}' — owned by {risks.iloc[0]['owner']}.")
+                    st.subheader("Agent Capabilities Used"); st.write("- Risk & Controls Agent\n- Integration Navigator Agent")
+                    st.subheader("Top Critical & High Risks"); st.dataframe(top_risks[["risk_id","severity","risk","owner","status","mitigation"]], use_container_width=True)
                 st.subheader("Recommended Actions"); st.write(f"1. Escalate all {critical_risks} Critical risks to the executive sponsor immediately.\n2. Assign mitigation plans to all {high_risks} High risks within 48 hours.\n3. Schedule a weekly risk review.")
-                st.subheader("Owners"); st.write(f"{integration_lead}, workstream owners per risk area")
+                st.subheader("Risk Owners Summary")
+                owner_summary = risks[risks["severity"].isin(["Critical","High"])].groupby("owner")["risk_id"].count().reset_index()
+                owner_summary.columns = ["Owner", "Open Risk Count"]
+                st.dataframe(owner_summary, use_container_width=True)
                 st.subheader("Next Steps"); st.write("Open the Risks tab to review the full register. Check the SoD Assessment section for controls-related conflicts.")
 
             elif topic == "finance":
@@ -647,6 +672,30 @@ try:
                 st.subheader("Recommended Actions"); st.write("1. Complete COA mapping and validate against IBM target structure.\n2. Resolve all Critical SoD conflicts in AP, AR, Payroll, and Bank & Treasury.\n3. Assign independent reconcilers for AP, AR, and Bank.\n4. Confirm close calendar and ERP cutover timeline.\n5. Implement dual authorization for all bank payments.")
                 st.subheader("Owners"); st.write(f"{integration_lead}, Finance Controller, CFO, Treasury, Internal Audit")
                 st.subheader("Next Steps"); st.write("Open the Risks tab SoD section and the Accounting & Process Mapping tab. Escalate Critical SoD items to CFO and Internal Audit immediately.")
+
+            elif topic == "timeline":
+                st.write(f"IBM Bob reviewed the integration timeline. Day 1 target is {day_1_date} and Day 100 target is {day_100_date}. Current readiness is {readiness_percent}% — {int(at_risk_areas)} workstreams are At Risk and {int(not_started_areas)} have not started.")
+                st.subheader("Agent Capabilities Used"); st.write("- Integration Navigator Agent\n- Integration Readiness Agent\n- Risk & Controls Agent")
+                st.subheader("Workstream Status vs Timeline"); st.dataframe(integration_status[["area","status","owner","day1_dependency" if "day1_dependency" in integration_status.columns else "status"]], use_container_width=True)
+                col_t1, col_t2, col_t3 = st.columns(3)
+                col_t1.metric("Day 1 Target", str(day_1_date))
+                col_t2.metric("Day 100 Target", str(day_100_date))
+                col_t3.metric("Overall Readiness", f"{readiness_percent}%")
+                st.subheader("Recommended Actions"); st.write(f"1. Confirm Day 1 date with the executive sponsor — currently {day_1_date}.\n2. Resolve all {int(at_risk_areas)} At Risk workstreams before Day 1.\n3. Assign owners and start dates to all {int(not_started_areas)} Not Started workstreams immediately.\n4. Build a detailed Day 1 to Day 100 milestone plan with fortnightly checkpoints.\n5. Schedule a final Day 1 readiness review 2 weeks before target.")
+                st.subheader("Owners"); st.write(f"{integration_lead}, workstream leads, executive sponsor")
+                st.subheader("Next Steps"); st.write("Open the Integration Status tab to review workstream owners and statuses. Update the dashboard as milestones are completed.")
+
+            elif topic == "controls":
+                controls_risks = risks[risks["risk"].str.lower().str.contains("control|audit|framework|assessment|standard|gap", na=False, regex=True)]
+                sod_critical = sod_matrix[sod_matrix["severity"] == "Critical"]
+                st.write(f"IBM Bob assessed the controls framework for the acquired entity. {len(sod_critical)} Critical SoD conflicts and {len(controls_risks)} controls-related risks have been identified against IBM standards.")
+                st.subheader("Agent Capabilities Used"); st.write("- Risk & Controls Agent\n- SoD Assessment Agent\n- Integration Navigator Agent")
+                if len(controls_risks) > 0:
+                    st.subheader("Controls & Audit Risks"); st.dataframe(controls_risks[["risk_id","severity","risk","owner","status","mitigation"]], use_container_width=True)
+                st.subheader("Critical SoD Controls Gaps"); st.dataframe(sod_critical[["process","task","sod_role","assigned_to","conflicts_with","sod_risk","mitigation"]], use_container_width=True)
+                st.subheader("Recommended Actions"); st.write("1. Conduct a full IBM controls gap assessment for all acquired entities before Day 100.\n2. Remediate all Critical SoD conflicts before Day 1.\n3. Implement IBM standard controls framework across Finance, HR, and Operations.\n4. Assign Internal Audit to validate controls remediation.\n5. Document all accepted residual risks with CFO sign-off.")
+                st.subheader("Owners"); st.write(f"{integration_lead}, Finance Controller, Internal Audit, CFO")
+                st.subheader("Next Steps"); st.write("Open the Risks tab → SoD Assessment section. Escalate R017 (Controls Framework Assessment) to the Integration Lead and Internal Audit immediately.")
 
             else:
                 st.write(f"IBM Bob reviewed the current workspace: readiness at {readiness_percent}%, {critical_risks} critical and {high_risks} high-risk items open, forecast spend of ${forecast_spend:,.0f}, legal entity savings of ${total_action_savings:,.0f}.")
@@ -664,6 +713,7 @@ try:
                 st.subheader("Recommended Actions"); st.write("1. Validate all uploaded acquisition data.\n2. Review and assign owners to all Critical and High risks.\n3. Confirm COA, workforce, and legal entity mapping.\n4. Assign SMEs to all open workstreams.\n5. Schedule Day 1 readiness review 2 weeks before target.")
                 st.subheader("Owners"); st.write(f"{integration_lead}, Finance, HR, Legal, Tax")
                 st.subheader("Timeline"); st.write(f"Day 1: {day_1_date}  |  Day 100: {day_100_date}")
+                st.subheader("Cash Release & Value Opportunity"); st.write(f"Cash Release: ${cash_release_opportunity/1000:.0f}K  |  Total Value Opportunity: ${total_value_opportunity/1000:.0f}K  |  Legal Entity Savings: ${total_action_savings/1000:.0f}K")
                 st.subheader("Next Steps"); st.write(f"{integration_lead} to review open risks, legal entity candidates, and readiness gaps before next checkpoint.")
             st.markdown("</div>", unsafe_allow_html=True)
 
