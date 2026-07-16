@@ -572,35 +572,85 @@ try:
             st.subheader("Executive Summary")
 
             if topic == "sod":
-                sod_critical = sod_matrix[sod_matrix["severity"] == "Critical"]
-                sod_high     = sod_matrix[sod_matrix["severity"] == "High"]
-                sod_open_risks = risks[risks["risk"].str.lower().str.contains("sod")]
-                st.write(
-                    f"IBM Bob identified **{len(sod_critical)} Critical** and **{len(sod_high)} High** Segregation of Duties (SoD) conflicts across {sod_matrix['process'].nunique()} processes. "
-                    f"Critical conflicts include bank payment authorization, payroll bank detail custody, and vendor master management — all requiring immediate remediation before Day 1."
-                )
-                st.subheader("Agent Capabilities Used")
-                st.write("- Risk & Controls Agent\n- SoD Assessment Agent\n- Integration Navigator Agent")
-                st.subheader("Critical SoD Conflicts")
-                st.dataframe(sod_critical[["process", "task", "sod_role", "assigned_to", "conflicts_with", "sod_risk", "mitigation"]], use_container_width=True)
-                st.subheader("High SoD Conflicts")
-                st.dataframe(sod_high[["process", "task", "sod_role", "assigned_to", "conflicts_with", "sod_risk", "mitigation"]], use_container_width=True)
-                if len(sod_open_risks) > 0:
-                    st.subheader("SoD Risks in Risk Register")
-                    st.dataframe(sod_open_risks[["risk_id", "severity", "risk", "owner", "status", "mitigation"]], use_container_width=True)
+                # ── Detect if user asked about a specific process ──
+                process_keywords = {
+                    "fixed assets":        ["fixed asset", "fixed assets"],
+                    "accounts payable":    ["accounts payable", "ap ", "payable"],
+                    "accounts receivable": ["accounts receivable", "ar ", "receivable"],
+                    "payroll":             ["payroll"],
+                    "general ledger":      ["general ledger", "journal", "manual journal"],
+                    "bank and treasury":   ["bank", "treasury", "bank payment"],
+                    "procurement":         ["procurement", "purchase order", "vendor master"],
+                }
+                matched_process = None
+                for proc, kws in process_keywords.items():
+                    if any(kw in q for kw in kws):
+                        matched_process = proc
+                        break
+
+                if matched_process:
+                    # Filter SoD matrix to the matched process
+                    proc_sod = sod_matrix[sod_matrix["process"].str.lower().str.contains(matched_process.lower(), na=False)]
+                    if proc_sod.empty:
+                        # fallback: partial match on first word
+                        proc_sod = sod_matrix[sod_matrix["process"].str.lower().str.contains(matched_process.split()[0], na=False)]
+                    proc_label = matched_process.title()
+                    st.write(
+                        f"IBM Bob identified **{len(proc_sod)} SoD conflict(s)** in the **{proc_label}** process. "
+                        f"These require immediate review and remediation to prevent fraud, financial misstatement, or control failure."
+                    )
+                    st.subheader("Agent Capabilities Used")
+                    st.write("- Risk & Controls Agent\n- SoD Assessment Agent")
+                    st.subheader(f"SoD Conflicts — {proc_label}")
+                    if not proc_sod.empty:
+                        st.dataframe(proc_sod[["process", "task", "sod_role", "assigned_to", "conflicts_with", "severity", "sod_risk", "mitigation"]], use_container_width=True)
+                    else:
+                        st.info(f"No SoD conflicts found specifically for '{proc_label}' in the current SoD matrix. Review the full SoD Assessment in the Risks tab.")
+                    # Also show any matching risk register entries
+                    proc_risks = risks[risks["risk"].str.lower().str.contains(matched_process.split()[0].lower(), na=False)]
+                    if not proc_risks.empty:
+                        st.subheader(f"Risk Register — {proc_label} Risks")
+                        st.dataframe(proc_risks[["risk_id", "severity", "risk", "owner", "status", "mitigation"]], use_container_width=True)
+                else:
+                    # No specific process — show full SoD picture
+                    sod_critical = sod_matrix[sod_matrix["severity"] == "Critical"]
+                    sod_high     = sod_matrix[sod_matrix["severity"] == "High"]
+                    sod_open_risks = risks[risks["risk"].str.lower().str.contains("sod")]
+                    st.write(
+                        f"IBM Bob identified **{len(sod_critical)} Critical** and **{len(sod_high)} High** Segregation of Duties (SoD) conflicts across {sod_matrix['process'].nunique()} processes. "
+                        f"Critical conflicts include bank payment authorization, payroll bank detail custody, and vendor master management — all requiring immediate remediation before Day 1."
+                    )
+                    st.subheader("Agent Capabilities Used")
+                    st.write("- Risk & Controls Agent\n- SoD Assessment Agent\n- Integration Navigator Agent")
+                    st.subheader("Critical SoD Conflicts")
+                    st.dataframe(sod_critical[["process", "task", "sod_role", "assigned_to", "conflicts_with", "sod_risk", "mitigation"]], use_container_width=True)
+                    st.subheader("High SoD Conflicts")
+                    st.dataframe(sod_high[["process", "task", "sod_role", "assigned_to", "conflicts_with", "sod_risk", "mitigation"]], use_container_width=True)
+                    if len(sod_open_risks) > 0:
+                        st.subheader("SoD Risks in Risk Register")
+                        st.dataframe(sod_open_risks[["risk_id", "severity", "risk", "owner", "status", "mitigation"]], use_container_width=True)
+                # Common recommended actions and next steps for all SoD responses
                 st.subheader("Recommended Actions")
-                st.write(
-                    "1. Immediately separate bank payment authorization from custody — implement dual authorization for all payments.\n"
-                    "2. Remove payroll team access to employee bank details — assign a dedicated custodian.\n"
-                    "3. Restrict vendor master management to Finance Controls team only; AP to process payments only.\n"
-                    "4. Require secondary approval for all manual journal entries in the General Ledger.\n"
-                    "5. Assign an independent reconciler for AP, AR, and Bank — not involved in posting.\n"
-                    "6. Complete a full IBM controls gap assessment for all acquired entities before Day 100."
-                )
+                if matched_process:
+                    proc_label = matched_process.title()
+                    st.write(
+                        f"1. Immediately assign separate roles for each SoD task in the {proc_label} process.\n"
+                        "2. Ensure no single person holds Authorize + Record + Verify + Custody roles for the same transaction.\n"
+                        "3. Implement compensating controls (secondary approval, independent reconciliation) where role separation is not yet possible.\n"
+                        "4. Escalate unresolved conflicts to the Finance Controller and Internal Audit.\n"
+                        "5. Document all remediation steps and obtain CFO sign-off before Day 1."
+                    )
+                else:
+                    st.write(
+                        "1. Immediately separate bank payment authorization from custody — implement dual authorization for all payments.\n"
+                        "2. Remove payroll team access to employee bank details — assign a dedicated custodian.\n"
+                        "3. Restrict vendor master management to Finance Controls team only; AP to process payments only.\n"
+                        "4. Require secondary approval for all manual journal entries in the General Ledger.\n"
+                        "5. Assign an independent reconciler for AP, AR, and Bank — not involved in posting.\n"
+                        "6. Complete a full IBM controls gap assessment for all acquired entities before Day 100."
+                    )
                 st.subheader("Owners")
                 st.write(f"{integration_lead}, Finance Controller, Treasury, HR, Internal Audit")
-                st.subheader("Risks")
-                st.write(f"{len(sod_critical)} Critical SoD conflicts create direct fraud, misappropriation, and financial misstatement exposure. All Critical items must be resolved before Day 1.")
                 st.subheader("Next Steps")
                 st.write("Open the Risks tab → SoD Assessment section to review all conflicts by process and role. Escalate Critical items to the CFO and Internal Audit immediately.")
 
