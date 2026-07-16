@@ -1,13 +1,13 @@
-area,status,owner
-Accounting,In Progress,Alice Tan
-Accounting & Process Mapping,In Progress,Alice Tan
-HR,Not Started,John Lee
-Tax,In Progress,Maria Ong
-Legal,Complete,David Lim
-Systems,Not Started,Sarah Chen
-Controls,In Progress,Kevin Wong
-Payroll,At Risk,John Lee
-Compliance,Not Started,Maria Ong
-Vendor Management,In Progress,David Lim
-Workforce Alignment,Not Started,John Lee
-IT Infrastructure,At Risk,Sarah Chen
+area,status,owner,day1_dependency,description,key_tasks,blockers
+Accounting,In Progress,Alice Tan,Yes,"Establish IBM chart of accounts in acquired entity. Align account codes, cost centres, and profit centres to IBM standard.","Map chart of accounts to IBM structure; identify orphan accounts; confirm cost centre hierarchy; validate with APAC Controller","Chart of accounts mapping 60% complete — orphan accounts pending resolution"
+Accounting & Process Mapping,In Progress,Alice Tan,Yes,"Design and map end-to-end accounting processes (AP, AR, GL, Fixed Assets) to IBM standard operating procedures and ERP configuration.","Map AP/AR/GL/FA processes to IBM SOPs; document process gaps; confirm ERP configuration requirements; validate with Finance SME","Process maps for AP and GL not yet drafted — ERP configuration requirements pending"
+HR,Not Started,John Lee,Yes,"Migrate employee data, confirm reporting lines, align compensation and benefits, and ensure payroll continuity from Day 1.","Upload headcount data; confirm org structure and reporting lines; align benefits; brief all employees within Week 1","HR data migration not started — reporting lines not confirmed"
+Tax,In Progress,Maria Ong,Yes,"Resolve all tax registration gaps. Confirm entity tax status in each country. Validate VAT, GST, withholding tax, and transfer pricing setup.","Complete tax registration in Malaysia; validate entity tax status in all 12 countries; confirm transfer pricing documentation","Tax registration in Malaysia incomplete — Critical blocker for Day 1"
+Legal,Complete,David Lim,No,"Legal entity structure confirmed. All contracts reviewed and assigned. Regulatory obligations mapped and communicated to stakeholders.","Legal entity review complete; contracts assigned; regulatory mapping done; entity structure communicated to Finance and HR","None — workstream complete"
+Systems,Not Started,Sarah Chen,Yes,"Provision systems access for all employees. Confirm ERP cutover plan. Validate IT infrastructure and network connectivity.","Map system access requirements per role; provision access; confirm ERP cutover date; validate network connectivity","Systems access provisioning not started — ERP cutover plan not confirmed"
+Controls,In Progress,Kevin Wong,No,"Assess internal controls of acquired entity against IBM standards. Identify SoD conflicts. Implement required control changes before Day 100.","Complete IBM controls gap assessment; identify SoD conflicts; implement dual authorization for Bank and Payroll; document control changes","SoD conflicts identified in Payroll and Bank — mitigation plans in progress"
+Payroll,At Risk,John Lee,Yes,"Ensure payroll continuity for all employees from Day 1. Confirm payroll system, bank details, and payment schedule in all geographies.","Confirm payroll system cutover date; validate bank details for all employees; test payroll run; confirm Japan payroll SME engaged","Payroll SME not confirmed in Japan — Day 1 payroll continuity at risk"
+Compliance,Not Started,Maria Ong,No,"Assess regulatory and compliance obligations across all acquired entity geographies. Confirm GDPR, data privacy, and local compliance requirements.","Map compliance obligations by country; confirm GDPR data handling; assess local licensing and regulatory requirements","Compliance assessment not started — risk of undetected regulatory breaches"
+Vendor Management,In Progress,David Lim,No,"Review and novate all vendor contracts. Rationalise supplier base. Confirm procurement policy alignment.","Identify all active vendor contracts; novate contracts to IBM entity; review vendor terms; confirm procurement policy","Vendor contract review 40% complete — novation of 8 contracts pending"
+Workforce Alignment,Not Started,John Lee,No,"Confirm org design, reporting lines, and role changes for all acquired employees. Communicate changes. Resolve redundancy or redeployment requirements.","Complete org design review; confirm reporting lines; communicate role changes; resolve redeployment cases","Org design not finalised — reporting lines not confirmed for 3 geographies"
+IT Infrastructure,At Risk,Sarah Chen,Yes,"Validate IT infrastructure capacity and network connectivity. Confirm cloud migration plan. Ensure Day 1 systems availability.","Assess infrastructure capacity; validate network connectivity in all sites; confirm cloud migration plan; test Day 1 systems availability","Network connectivity not confirmed in 2 sites — cloud migration plan pending"

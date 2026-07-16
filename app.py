@@ -577,21 +577,79 @@ try:
     with status_tab:
         render_tab_header(
             "Integration Status",
-            "Review current progress across all tracked integration workstreams. Identify incomplete areas and assign owners to drive Day 1 and Day 100 readiness.",
+            "Review current progress across all tracked integration workstreams. Identify blockers, confirm Day 1 dependencies, and assign owners to drive readiness.",
         )
-        status_metric_col1, status_metric_col2, status_metric_col3, status_metric_col4 = st.columns(4)
-        status_metric_col1.metric("Tracked Areas", total_areas)
-        status_metric_col2.metric("Completed", int(completed_areas))
-        status_metric_col3.metric("At Risk", int(at_risk_areas))
-        status_metric_col4.metric("Readiness Score", f"{readiness_percent}%")
+        status_metric_col1, status_metric_col2, status_metric_col3, status_metric_col4, status_metric_col5 = st.columns(5)
+        status_metric_col1.metric("Tracked Workstreams", total_areas)
+        status_metric_col2.metric("Complete", int(completed_areas))
+        status_metric_col3.metric("In Progress", int((integration_status["status"] == "In Progress").sum()))
+        status_metric_col4.metric("At Risk", int(at_risk_areas))
+        status_metric_col5.metric("Readiness Score", f"{readiness_percent}%")
         st.progress(readiness_percent / 100)
+        st.caption(f"Day 1 Dependencies: {int((integration_status['day1_dependency'] == 'Yes').sum()) if 'day1_dependency' in integration_status.columns else 'N/A'} workstreams must be complete before Day 1")
         st.markdown("---")
-        st.subheader("Workstream Status")
-        for _, row in integration_status.iterrows():
+
+        # Filter controls
+        filter_col1, filter_col2 = st.columns(2)
+        with filter_col1:
+            status_filter = st.selectbox("Filter by status", ["All", "Complete", "In Progress", "At Risk", "Not Started"], key="status_filter")
+        with filter_col2:
+            day1_filter = st.selectbox("Filter by Day 1 dependency", ["All", "Day 1 Required", "Day 100 Only"], key="day1_filter")
+
+        filtered_status = integration_status.copy()
+        if status_filter != "All":
+            filtered_status = filtered_status[filtered_status["status"] == status_filter]
+        if day1_filter == "Day 1 Required" and "day1_dependency" in integration_status.columns:
+            filtered_status = filtered_status[filtered_status["day1_dependency"] == "Yes"]
+        elif day1_filter == "Day 100 Only" and "day1_dependency" in integration_status.columns:
+            filtered_status = filtered_status[filtered_status["day1_dependency"] == "No"]
+
+        st.caption(f"Showing {len(filtered_status)} workstreams")
+        st.markdown("---")
+
+        has_details = "description" in integration_status.columns
+
+        for _, row in filtered_status.iterrows():
+            status_val   = row["status"]
+            owner_val    = row["owner"]
+            area_val     = row["area"]
+            day1_val     = row.get("day1_dependency", "—") if has_details else "—"
+            desc_val     = row.get("description", "") if has_details else ""
+            tasks_val    = row.get("key_tasks", "") if has_details else ""
+            blockers_val = row.get("blockers", "") if has_details else ""
+
+            # Colour coding
+            border_color = {"Complete": "#42be65", "In Progress": "#0f62fe", "At Risk": "#fa4d56", "Not Started": "#8d8d8d"}.get(status_val, "#e5e7eb")
+            day1_html = (
+                f'<span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;">Day 1 Required</span>'
+                if day1_val == "Yes"
+                else f'<span style="background:#f0fdf4;color:#166534;font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;">Day 100</span>'
+            )
+            blocker_html = (
+                f'<div style="margin-top:6px;background:#fff7ed;border-left:3px solid #f97316;padding:6px 10px;border-radius:4px;font-size:12px;color:#9a3412;">⚠ <b>Blocker:</b> {blockers_val}</div>'
+                if blockers_val and blockers_val.lower() != "none — workstream complete"
+                else ""
+            )
+
             st.markdown(
-                f"<div class='risk-row'><b>{row['area']}</b> &nbsp; {status_badge(row['status'])} &nbsp;&nbsp; Owner: {row['owner']}</div>",
+                f"""<div style="border:1px solid #e5e7eb;border-left:4px solid {border_color};border-radius:10px;
+                    padding:14px 18px;margin-bottom:10px;background:#ffffff;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                        <div>
+                            <span style="font-size:15px;font-weight:700;color:#1f2328;">{area_val}</span>
+                            &nbsp;&nbsp;{status_badge(status_val)}&nbsp;&nbsp;{day1_html}
+                        </div>
+                        <div style="font-size:12px;color:#57606a;">Owner: <b>{owner_val}</b></div>
+                    </div>
+                    <div style="font-size:13px;color:#444;margin-top:8px;">{desc_val}</div>
+                    <div style="font-size:12px;color:#57606a;margin-top:6px;">
+                        <b>Key Tasks:</b> {tasks_val}
+                    </div>
+                    {blocker_html}
+                </div>""",
                 unsafe_allow_html=True,
             )
+
         st.markdown("---")
         st.subheader("Full Data Table")
         st.dataframe(integration_status, use_container_width=True)
