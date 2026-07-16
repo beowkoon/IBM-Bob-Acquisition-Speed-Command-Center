@@ -324,7 +324,7 @@ try:
                     </div>
                     <div>
                         <div style="font-size:24px;font-weight:700;">Live Prototype Dashboard — {workspace_name}</div>
-                        <div style="font-size:13px;opacity:0.85;">IBM Bob · Acquisition Speed Command Center · 480 employees · 20 legal entities · {len(risks)} active risks</div>
+                        <div style="font-size:13px;opacity:0.85;">IBM Bob · Acquisition Speed Command Center · 480 employees · 60 legal entities · {len(risks)} active risks</div>
                     </div>
                 </div>
                 <div style="display:flex; gap:32px; font-size:13px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.2);">
