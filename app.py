@@ -315,18 +315,25 @@ try:
         st.markdown(
             f"""
             <div class="executive-banner">
-                <div style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">
-                    Live Prototype Dashboard — {workspace_name}
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:4px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,0.4);">
+                        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="15" fill="#0f62fe"/>
+                            <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff" font-family="Arial,sans-serif">Bob</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size:24px;font-weight:700;">Live Prototype Dashboard — {workspace_name}</div>
+                        <div style="font-size:13px;opacity:0.85;">IBM Bob · Acquisition Speed Command Center · 480 employees · 20 legal entities · {len(risks)} active risks</div>
+                    </div>
                 </div>
-                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 12px;">
-                    The prototype is live — and the outcomes are measurable, not aspirational.
-                </div>
-                <div style="display:flex; gap:32px; font-size:13px; flex-wrap:wrap;">
+                <div style="display:flex; gap:32px; font-size:13px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.2);">
                     <span><b>Integration Lead:</b> &nbsp;{integration_lead}</span>
                     <span><b>Region:</b> &nbsp;{region}</span>
                     <span><b>Day 1 Target:</b> &nbsp;{day_1_date}</span>
                     <span><b>Day 100 Target:</b> &nbsp;{day_100_date}</span>
-                    <span><b>Open Risk Actions:</b> &nbsp;{len(risks)}</span>
+                    <span><b>Total Budget:</b> &nbsp;${sum([2500000,3800000,1800000,4200000,1500000,5600000,900000])/1e6:.1f}M</span>
+                    <span><b>Estimated Savings:</b> &nbsp;${sum([320000,480000,210000,560000,190000,720000,115000])/1e6:.2f}M</span>
                 </div>
             </div>
             """,
