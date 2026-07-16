@@ -333,6 +333,12 @@ try:
             unsafe_allow_html=True,
         )
 
+        # ── Refresh button ──
+        refresh_col, _ = st.columns([1, 5])
+        with refresh_col:
+            if st.button("🔄 Refresh Dashboard", key="refresh_dashboard", help="Reload all uploaded data and refresh the dashboard metrics"):
+                st.rerun()
+
         # ── 5 top metric cards ──
         mc1, mc2, mc3, mc4, mc5 = st.columns(5)
         mc1.metric("Overall Readiness", f"{readiness_percent}%",
