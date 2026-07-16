@@ -473,12 +473,37 @@ try:
 
 
         # ── Ask Bob full-width below columns ──
+        st.markdown("""
+        <style>
+        textarea[data-testid="stTextArea"] textarea,
+        div[data-testid="stTextArea"] textarea {
+            border: 2px solid #0f62fe !important;
+            border-radius: 8px !important;
+            background: #ffffff !important;
+            font-size: 14px !important;
+            color: #1f2328 !important;
+            padding: 10px 14px !important;
+            box-shadow: 0 0 0 3px rgba(15,98,254,0.12) !important;
+        }
+        div[data-testid="stTextArea"] textarea:focus {
+            border: 2px solid #0043ce !important;
+            box-shadow: 0 0 0 4px rgba(0,67,206,0.18) !important;
+            outline: none !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
         st.markdown("**Ask IBM Bob**")
-        st.write("Ask anything about this acquisition integration.")
+        st.markdown(
+            "<div style='font-size:13px;color:#57606a;margin-bottom:6px;'>"
+            "Type your question below — ask anything about risks, budget, readiness, SoD, legal entities, SMEs, or the integration plan."
+            "</div>",
+            unsafe_allow_html=True,
+        )
         dashboard_bob_question = st.text_area(
-            "",
-            value="Multi-layer processes are not harmonized — where do we even start?",
+            "💬 Type your question here",
+            value="",
+            placeholder="e.g. What are the open risks? / What is the SOD risk? / What is our Day 1 readiness?",
             height=100,
             key="dashboard_bob_question",
         )
