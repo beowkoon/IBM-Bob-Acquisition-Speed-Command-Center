@@ -413,7 +413,7 @@ try:
         with panels_col:
             # Budget overview panel
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.markdown("**Budget Overview**")
+            st.markdown("**Budget by Business Unit**")
             budget_items = list(zip(budget["category"], budget["forecast_spend"]))
             total_fc = budget["forecast_spend"].sum()
             for cat, val in budget_items:
