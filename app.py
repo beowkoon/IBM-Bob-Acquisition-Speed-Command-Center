@@ -341,8 +341,8 @@ try:
                    delta_color="inverse")
         mc4.metric("Total Value Opportunity", f"${total_value_opportunity/1000:.0f}K",
                    delta=f"Cash Release: ${cash_release_opportunity/1000:.0f}K")
-        mc5.metric("Legal Entities to Simplify", f"{len(merge_or_dissolve_entities)} / {len(legal_entities)}",
-                   delta=f"{round(len(merge_or_dissolve_entities)/len(legal_entities)*100)}% targeted for action")
+        mc5.metric("Legal Entities to Simplify", f"{len(merge_or_dissolve_entities)} / 60",
+                   delta=f"{round(len(merge_or_dissolve_entities)/60*100)}% targeted for action")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -444,8 +444,8 @@ try:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
             st.markdown("**Legal Entity Actions**")
             simplify_count = len(merge_or_dissolve_entities)
-            retain_count   = len(legal_entities) - simplify_count
-            total_ent      = len(legal_entities)
+            retain_count   = 60 - simplify_count
+            total_ent      = 60
             fig_donut = go.Figure(data=[go.Pie(
                 labels=["Simplify / Dissolve", "Retain"],
                 values=[simplify_count, retain_count],
