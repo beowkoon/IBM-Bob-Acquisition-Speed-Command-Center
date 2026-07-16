@@ -351,7 +351,7 @@ try:
 
         with journey_col:
             st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.markdown("**Integration Journey — 7 Workstreams**")
+            st.markdown("**Integration Journey — 7 Key Workstreams**")
             journey_steps = [
                 ("Due Diligence",             "Complete"),
                 ("Day 1 Readiness",           "In Progress"),
