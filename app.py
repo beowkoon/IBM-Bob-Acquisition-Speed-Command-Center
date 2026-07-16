@@ -389,18 +389,6 @@ try:
                 )
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Ask Bob box below journey
-            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-            st.markdown("**Ask IBM Bob**")
-            st.write("Ask anything about this acquisition integration.")
-            dashboard_bob_question = st.text_area(
-                "",
-                value="Multi-layer processes are not harmonized — where do we even start?",
-                height=100,
-                key="dashboard_bob_question",
-            )
-            dashboard_ask = st.button("Ask Bob", key="dashboard_ask_bob")
-            st.markdown("</div>", unsafe_allow_html=True)
 
         with panels_col:
             # Budget overview panel
@@ -484,6 +472,19 @@ try:
                 )
             st.markdown("</div>", unsafe_allow_html=True)
 
+        # ── Ask Bob full-width below columns ──
+        st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+        st.markdown("**Ask IBM Bob**")
+        st.write("Ask anything about this acquisition integration.")
+        dashboard_bob_question = st.text_area(
+            "",
+            value="Multi-layer processes are not harmonized — where do we even start?",
+            height=100,
+            key="dashboard_bob_question",
+        )
+        dashboard_ask = st.button("Ask Bob", key="dashboard_ask_bob")
+        st.markdown("</div>", unsafe_allow_html=True)
+
         # ── Bob response full-width below ──
         if dashboard_ask and dashboard_bob_question:
             question_lower = dashboard_bob_question.lower()
@@ -552,6 +553,14 @@ try:
                 st.subheader("Readiness by Status"); st.dataframe(integration_status[["area", "status", "owner"]], use_container_width=True)
                 st.subheader("Recommended Actions"); st.write(f"1. Resolve all {int(at_risk_areas)} At Risk workstreams before Day 1.\n2. Assign owners to all {int(not_started_areas)} Not Started workstreams.\n3. Schedule Day 1 readiness review 2 weeks before target.")
                 st.subheader("Next Steps"); st.write("Open the Integration Status tab and address all At Risk items before the next checkpoint.")
+            elif "harmonized" in question_lower or "harmonize" in question_lower or "process" in question_lower or "where do we even start" in question_lower:
+                st.write(f"IBM Bob recommends a structured process harmonization approach across {total_areas} workstreams. Start by mapping all acquired entity processes against IBM's target operating model, then identify divergence points and assign workstream owners.")
+                st.subheader("Agent Capabilities Used"); st.write("- Integration Navigator Agent\n- Accounting & Process Mapping Agent\n- Risk & Controls Agent\n- Integration Readiness Agent")
+                st.subheader("Recommended Actions"); st.write("1. Run a full process inventory across Finance, HR, Legal, Tax, and Operations.\n2. Map each acquired process to the IBM target process layer.\n3. Identify and prioritize the top divergence gaps by risk and Day 1 impact.\n4. Assign a workstream owner and SME to each gap.\n5. Build a harmonization roadmap with milestones to Day 1 and Day 100.")
+                st.subheader("Owners"); st.write(f"{integration_lead}, Finance, HR, Legal, Tax, Operations")
+                st.subheader("Risks"); st.write(f"Unharmonized processes across {total_areas} workstreams increase the risk of reporting errors, compliance gaps, and delayed integration milestones. {int(at_risk_areas)} workstreams are currently At Risk.")
+                st.subheader("Current Workstream Status"); st.dataframe(integration_status[["area", "status", "owner"]], use_container_width=True)
+                st.subheader("Next Steps"); st.write("Open the Integration Status tab and assign owners to all At Risk and Not Started workstreams. Use the Accounting & Process Mapping tab to begin the process gap analysis.")
             else:
                 st.write(f"IBM Bob reviewed the current workspace: readiness at {readiness_percent}%, {critical_risks} critical and {high_risks} high-risk items open, forecast spend of ${forecast_spend:,.0f}, legal entity savings of ${total_action_savings:,.0f}.")
                 st.subheader("Agent Capabilities Used"); st.write("- Integration Navigator\n- Risk & Controls Agent\n- Budget & Value Tracking Agent\n- Legal Entity Optimization Agent\n- SME Discovery Agent")
