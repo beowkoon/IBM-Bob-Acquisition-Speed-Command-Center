@@ -749,17 +749,6 @@ try:
                 st.subheader("Next Steps"); st.write(f"{integration_lead} to review open risks, legal entity candidates, and readiness gaps before next checkpoint.")
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # ── Target outcomes ──
-        st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
-        st.subheader("Target Outcomes")
-        outcome_col1, outcome_col2, outcome_col3, outcome_col4, outcome_col5 = st.columns(5)
-        outcome_col1.metric("Planning Time Reduced", "45%")
-        outcome_col2.metric("SME Search Time Reduced", "60%")
-        outcome_col3.metric("Mapping Effort Reduced", "35%")
-        outcome_col4.metric("Readiness Review Accelerated", "50%")
-        outcome_col5.metric("Estimated Value Opportunity", "$1.3M")
-        st.markdown("</div>", unsafe_allow_html=True)
-
     # ── INTEGRATION STATUS TAB ─────────────────────────────────────────────────
     with status_tab:
         render_tab_header(
