@@ -334,10 +334,15 @@ try:
         )
 
         # ── Refresh button ──
-        refresh_col, _ = st.columns([1, 5])
+        refresh_col, label_col, _ = st.columns([1.2, 3, 2])
         with refresh_col:
-            if st.button("🔄 Refresh Dashboard", key="refresh_dashboard", help="Reload all uploaded data and refresh the dashboard metrics"):
+            if st.button("🔄 Refresh Dashboard", key="refresh_dashboard"):
                 st.rerun()
+        with label_col:
+            st.markdown(
+                "<div style='padding-top:10px;font-size:12px;color:#57606a;'>Reload all uploaded data and refresh the dashboard metrics</div>",
+                unsafe_allow_html=True,
+            )
 
         # ── 5 top metric cards ──
         mc1, mc2, mc3, mc4, mc5 = st.columns(5)
