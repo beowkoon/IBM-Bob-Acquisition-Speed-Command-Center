@@ -395,7 +395,7 @@ try:
             st.write("Ask anything about this acquisition integration.")
             dashboard_bob_question = st.text_area(
                 "",
-                value="We acquired a company with different COA, 12 legal entities, 500 employees and incomplete tax registration. What should we do first?",
+                value="Multi-layer processes are not harmonized — where do we even start?",
                 height=100,
                 key="dashboard_bob_question",
             )
@@ -943,7 +943,7 @@ try:
             "Sample questions",
             [
                 "What should we do first after acquiring Company X?",
-                "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?",
+                "Multi-layer processes are not harmonized — where do we even start?",
                 "Which legal entities can be merged or dissolved and what is the cash impact?",
                 "Who can help with payroll integration in Japan?",
             ],
@@ -978,7 +978,7 @@ try:
             st.subheader("Next Steps")
             st.write(f"{integration_lead} to review all open risks and readiness gaps before next checkpoint.")
 
-        elif question == "We acquired a company with different COA, 12 legal entities and 500 employees. What should we do first?":
+        elif question == "Multi-layer processes are not harmonized — where do we even start?":
             st.subheader("Executive Summary")
             st.write(
                 f"Start by launching the {workspace_name} workspace for {region}. Validate chart of accounts mapping, review {len(legal_entities)} legal entities for simplification, and align the 500-employee workforce structure to target Day 1 ({day_1_date}) and Day 100 ({day_100_date})."
