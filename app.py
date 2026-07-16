@@ -389,6 +389,80 @@ try:
                 )
             st.markdown("</div>", unsafe_allow_html=True)
 
+            # ── Top Priorities panel ──
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+            st.markdown("**Top Priorities — Critical & High Risks**")
+            top_open_risks = risks[risks["severity"].isin(["Critical", "High"])].head(5)
+            sev_color = {"Critical": "#fa4d56", "High": "#ff832b", "Medium": "#f1c21b"}
+            for _, row in top_open_risks.iterrows():
+                sc = sev_color.get(row["severity"], "#888")
+                st.markdown(
+                    f"""<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;padding:8px 10px;background:#fff;border:1px solid #e5e7eb;border-left:4px solid {sc};border-radius:6px;">
+                        <div style="flex:1;">
+                            <div style="font-size:12px;font-weight:700;color:{sc};">{row['severity']}</div>
+                            <div style="font-size:13px;color:#1f2328;margin:2px 0 4px;">{row['risk']}</div>
+                            <div style="font-size:11px;color:#57606a;">Owner: <b>{row['owner']}</b> &nbsp;|&nbsp; Status: <b>{row['status']}</b></div>
+                        </div>
+                    </div>""",
+                    unsafe_allow_html=True,
+                )
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # ── Key Dates panel ──
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+            st.markdown("**Key Integration Dates**")
+            from datetime import date as _date
+            today = _date.today()
+            try:
+                days_to_day1   = (day_1_date - today).days
+                days_to_day100 = (day_100_date - today).days
+            except Exception:
+                days_to_day1   = 0
+                days_to_day100 = 0
+            d1_color   = "#fa4d56" if days_to_day1   < 30 else "#0f62fe"
+            d100_color = "#fa4d56" if days_to_day100 < 30 else "#0f62fe"
+            st.markdown(
+                f"""<div style="display:flex;gap:12px;margin-bottom:8px;">
+                    <div style="flex:1;padding:10px 12px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:#57606a;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Day 1 Target</div>
+                        <div style="font-size:16px;font-weight:700;color:{d1_color};margin:4px 0;">{day_1_date}</div>
+                        <div style="font-size:12px;color:{d1_color};font-weight:600;">{days_to_day1} days away</div>
+                    </div>
+                    <div style="flex:1;padding:10px 12px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:#57606a;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Day 100 Target</div>
+                        <div style="font-size:16px;font-weight:700;color:{d100_color};margin:4px 0;">{day_100_date}</div>
+                        <div style="font-size:12px;color:{d100_color};font-weight:600;">{days_to_day100} days away</div>
+                    </div>
+                </div>""",
+                unsafe_allow_html=True,
+            )
+            d1_kpis = [
+                ("Overall Readiness", f"{readiness_percent}%"),
+                ("Critical Risks Open", str(critical_risks)),
+                ("Workstreams At Risk", str(int(at_risk_areas))),
+                ("Not Started", str(int(not_started_areas))),
+            ]
+            for label, val in d1_kpis:
+                st.markdown(
+                    f'<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid #f0f1f3;"><span style="color:#57606a;">{label}</span><b>{val}</b></div>',
+                    unsafe_allow_html=True,
+                )
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # ── SME Quick Reference panel ──
+            st.markdown("<div class='executive-card'>", unsafe_allow_html=True)
+            st.markdown("**SME Quick Reference**")
+            for _, row in sme_directory.iterrows():
+                st.markdown(
+                    f"""<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f1f3;">
+                        <div style="flex:1;">
+                            <span style="font-size:13px;font-weight:600;color:#1f2328;">{row['primary_sme']}</span>
+                            <span style="font-size:11px;color:#57606a;margin-left:6px;">{row['function']} · {row['geography']}</span>
+                        </div>
+                    </div>""",
+                    unsafe_allow_html=True,
+                )
+            st.markdown("</div>", unsafe_allow_html=True)
 
         with panels_col:
             # Budget overview panel
