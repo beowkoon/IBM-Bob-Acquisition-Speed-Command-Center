@@ -713,18 +713,26 @@ try:
                 st.subheader("Next Steps"); st.write("Open the SME Directory tab and engage the payroll SME. Review SoD conflicts in the Risks tab.")
 
             elif topic == "budget":
-                st.write(f"IBM Bob reviewed integration spend: forecast of ${forecast_spend:,.0f} against a total budget of ${total_budget:,.0f}, with estimated savings of ${estimated_savings:,.0f}. Budget variance is {budget_variance_pct:+.1f}%.")
-                st.subheader("Agent Capabilities Used"); st.write("- Budget & Value Tracking Agent")
+                st.write(f"IBM Bob reviewed integration spend and value opportunity. Forecast of ${forecast_spend/1e6:.2f}M against a total budget of ${total_budget/1e6:.2f}M ({budget_variance_pct:+.1f}% variance). Total value opportunity from this integration is ${total_value_opportunity/1000:.0f}K — combining ${estimated_savings/1000:.0f}K in operational savings and ${total_action_savings/1000:.0f}K in legal entity savings.")
+                st.subheader("Agent Capabilities Used"); st.write("- Budget & Value Tracking Agent\n- Legal Entity Optimization Agent")
                 bm1, bm2, bm3, bm4 = st.columns(4)
                 bm1.metric("Total Budget", f"${total_budget/1e6:.2f}M")
                 bm2.metric("Forecast Spend", f"${forecast_spend/1e6:.2f}M", delta=f"{budget_variance_pct:+.1f}% vs budget", delta_color="inverse")
-                bm3.metric("Estimated Savings", f"${estimated_savings/1000:.0f}K")
+                bm3.metric("Total Value Opportunity", f"${total_value_opportunity/1000:.0f}K")
                 bm4.metric("Cash Release Opportunity", f"${cash_release_opportunity/1000:.0f}K")
-                st.subheader("Budget by Category"); st.dataframe(budget[["category","budget","actual_spend","forecast_spend","estimated_savings"]], use_container_width=True)
-                st.subheader("Recommended Actions"); st.write("1. Review current spend by category against plan.\n2. Validate forecast assumptions and savings targets.\n3. Escalate any overspend categories to the Integration Lead.\n4. Confirm cash release timeline with Treasury.")
+                # Value breakdown
+                st.subheader("Total Value Opportunity Breakdown")
+                _bu = budget[["category","estimated_savings"]].copy(); _bu.columns = ["Source","Value (USD)"]; _bu["Type"] = "Integration Savings"
+                _ent = merge_or_dissolve_entities[["entity_name","saving_if_action_is_taken"]].copy(); _ent.columns = ["Source","Value (USD)"]; _ent["Type"] = "Legal Entity Savings"
+                _vb = pd.concat([_bu, _ent], ignore_index=True)
+                _vb = _vb[_vb["Value (USD)"] > 0].sort_values("Value (USD)", ascending=False)
+                _tot = pd.DataFrame([{"Source": "TOTAL VALUE OPPORTUNITY", "Value (USD)": total_value_opportunity, "Type": ""}])
+                st.dataframe(pd.concat([_vb, _tot], ignore_index=True), use_container_width=True, hide_index=True)
+                st.subheader("Budget by Business Unit"); st.dataframe(budget[["category","budget","actual_spend","forecast_spend","estimated_savings"]], use_container_width=True)
+                st.subheader("Recommended Actions"); st.write("1. Review current spend by business unit against plan.\n2. Validate forecast assumptions and savings targets.\n3. Escalate any overspend categories to the Integration Lead.\n4. Confirm cash release timeline with Treasury.\n5. Open the Budget tab for the full value opportunity breakdown.")
                 st.subheader("Owners"); st.write(f"{integration_lead}, Finance")
                 st.subheader("Risks"); st.write("Forecast variance may indicate scope creep or unplanned integration costs.")
-                st.subheader("Next Steps"); st.write("Open the Budget tab to review detailed spend by category.")
+                st.subheader("Next Steps"); st.write("Open the **Budget tab** → Total Value Opportunity section to see the full breakdown of where the $" + f"{total_value_opportunity/1000:.0f}K comes from.")
 
             elif topic == "coa":
                 st.write("IBM Bob identified accounting and process mapping as the first priority. Chart of accounts alignment, process design, and ERP mapping must all be completed before the first consolidated close.")
@@ -1066,6 +1074,29 @@ try:
         budget_metric_col3.metric("Forecast Spend", f"${forecast_spend:,.0f}", delta=f"{budget_variance_pct:+.1f}% vs budget", delta_color="inverse")
         budget_metric_col4.metric("Estimated Savings", f"${estimated_savings:,.0f}")
         st.markdown("---")
+
+        # ── Total Value Opportunity breakdown ──
+        st.subheader("Total Value Opportunity — $" + f"{total_value_opportunity/1000:.0f}K")
+        st.caption("The combined financial benefit IBM can realise from this acquisition integration — operational savings across business units plus legal entity simplification savings.")
+        val_col1, val_col2, val_col3 = st.columns(3)
+        val_col1.metric("Integration Savings (BU)", f"${estimated_savings:,.0f}", help="Estimated savings from integrating systems, processes, headcount, and procurement across all business units")
+        val_col2.metric("Legal Entity Savings", f"${total_action_savings:,.0f}", help="Savings from merging or dissolving redundant legal entities — admin costs and audit fees eliminated")
+        val_col3.metric("Cash Release Opportunity", f"${cash_release_opportunity:,.0f}", help="Immediate cash freed by closing or merging dormant/duplicate entities — annual admin costs that stop immediately")
+
+        # Value breakdown table
+        bu_savings = budget[["category", "estimated_savings"]].copy()
+        bu_savings.columns = ["Source", "Value (USD)"]
+        bu_savings["Type"] = "Integration Savings"
+        entity_savings_rows = merge_or_dissolve_entities[["entity_name", "saving_if_action_is_taken"]].copy()
+        entity_savings_rows.columns = ["Source", "Value (USD)"]
+        entity_savings_rows["Type"] = "Legal Entity Savings"
+        value_breakdown = pd.concat([bu_savings, entity_savings_rows], ignore_index=True)
+        value_breakdown = value_breakdown[value_breakdown["Value (USD)"] > 0].sort_values("Value (USD)", ascending=False)
+        total_row = pd.DataFrame([{"Source": "TOTAL VALUE OPPORTUNITY", "Value (USD)": total_value_opportunity, "Type": ""}])
+        value_breakdown = pd.concat([value_breakdown, total_row], ignore_index=True)
+        st.dataframe(value_breakdown, use_container_width=True, hide_index=True)
+        st.markdown("---")
+
         st.subheader("Budget by Category")
         fig_budget_tab = px.bar(
             budget,
